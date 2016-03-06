@@ -1,5 +1,5 @@
 Package: ctsGE
-Title: Clustering of time series gene expression data
+Title: Clustering of Time Series Gene Expression data
 Version: 0.0.0.9000
 Authors@R: person("Michal", "Sharabi-Schwager", email = "michalsharabi@gmail.com", role = c("aut", "cre"))
 Maintainer: Michal Sharabi-Schwager <michalsharabi@gmail.com>
