@@ -8,10 +8,11 @@ Description: Methodology for supervised clustering of potentially many predictor
 Depends:
     R (>= 3.2)
 Imports:
+    BiocStyle,
     ggplot2,
     limma,
     reshape2
-Suggests: BiocStyle,
+Suggests: 
           GEOquery,
           knitr,
           rmarkdown
