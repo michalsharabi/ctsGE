@@ -14,7 +14,9 @@ output:
  BiocStyle::html_document:
     toc: true
 ---
-
+```{r package_options, include=FALSE}
+knitr::opts_knit$set(progress = TRUE, verbose = TRUE)
+```
 
 ```{r, echo = FALSE, message = FALSE}
 library(ctsGE)
