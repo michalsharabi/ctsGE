@@ -7,11 +7,11 @@ abstract: >
 
 vignette: >
   %\VignetteIndexEntry{ctsGE Package}
-  %\VignetteEngine{knitr::render_markdown}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} 
  
 output: 
- BiocStyle::html_document:
+ knitr::html_document:
     toc: true
 ---
 
