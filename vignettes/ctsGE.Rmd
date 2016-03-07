@@ -7,7 +7,7 @@ abstract: >
 
 vignette: >
   %\VignetteIndexEntry{ctsGE Package}
-  %\VignetteEngine{knitr}
+  %\VignetteEngine{knitr::render_markdown}
   %\VignetteEncoding{UTF-8} 
  
 output: 
