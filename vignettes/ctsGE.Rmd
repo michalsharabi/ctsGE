@@ -42,7 +42,7 @@ library(pander)
 
 ## Installing ctsGE
 ```{r,eval=FALSE,warning=FALSE,message=FALSE}
-install.packages("ctsGE_0.1.tar.gz",repos=NULL,type="source")
+devtools::install_github("michmich76/ctsGE")
 
 ```
 
