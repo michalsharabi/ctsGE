@@ -26,7 +26,7 @@ It is often recommanded to standardized the data before clustering, the standard
 
 If you are not intresting in standardizing your data before clustering, you can set the \command{\strong{scaling}} parameter to FALSE.
 
-If you want to cluster a specific profile, you don't have to cluster all your profiles, you can skip this step and directly run \emph{PlotProfilesClust}
+If you want to cluster a specific profile, you do not have to cluster all your profiles, you can skip this step and directly run \emph{PlotProfilesClust}
 with the profile of your choise, for more details see: \code{\link{PlotProfilesClust}}
 }
 \examples{
