@@ -7,11 +7,11 @@ abstract: >
 
 vignette: >
   %\VignetteIndexEntry{ctsGE Package}
-  %\VignetteEngine{rmarkdown::render}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} 
  
 output: 
- knitr::html_document:
+ BiocStyle::html_document:
     toc: true
 ---
 
@@ -41,9 +41,17 @@ library(pander)
 2. Clustering each profile with **kmeans** function: $$kmeans(genesInProfile,k)$$
 
 ## Installing ctsGE
+
+
 ```{r,eval=FALSE,warning=FALSE,message=FALSE}
 devtools::install_github("michmich76/ctsGE")
+```
 
+**OR:**
+
+*Download `ctsGE_0.0.0.9000.tar.gz` from [here](https://github.com/michmich76/ctsGE/tree/master/source)*
+```{r, eval=FALSE,warning=FALSE,message=FALSE }
+install.packages("ctsGE_0.0.0.9000.tar.gz",repos=NULL,type="source")
 ```
 
 ## Input data and preparations
