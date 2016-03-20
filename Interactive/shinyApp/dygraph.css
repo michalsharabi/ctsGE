@@ -1,0 +1,6 @@
+ .dygraph-legend  > span { display: none; }
+ .dygraph-legend  > .highlight { display: inline; }
+
+.dygraph-title {
+    color: gray;
+}
