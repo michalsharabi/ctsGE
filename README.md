@@ -16,3 +16,9 @@ You can dowload source file from [here](https://github.com/michmich76/ctsGE/tree
 ```{}
 vignette("ctsGE")
 ```
+###Interactive example using **ctsGE**:
+
+please see [ctsGEApp](https://michalsharabi.shinyapps.io/ctsGEApp/)
+
+For the App code: https://github.com/michmich76/ctsGE/tree/master/Interactive/shinyApp
+
