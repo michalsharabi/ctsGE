@@ -1,5 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^README.md
-^*\*.gz$
+^README\.md
+^*\.gz$
+^*/shinyApp/*
 
