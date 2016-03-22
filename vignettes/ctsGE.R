@@ -16,9 +16,19 @@ gseList  <- lapply(GSMList(gse2077),function(x){Table(x)}) # list of the time se
 ## ----message=FALSE, warning=FALSE----------------------------------------
 names(gseList)
 
+## ---- message=FALSE,warning=FALSE----------------------------------------
+data_dir <- system.file("extdata", package = "ctsGE")
+files <- dir(path=data_dir,pattern = "\\.xls$")
+
+
 ## ----message=FALSE,warning=FALSE-----------------------------------------
 
+rts <- readTSGE(files, path = data_dir, labels = c("0h","6h","12h","24h","48h","72h") )
+
+## ----message=FALSE,warning=FALSE-----------------------------------------
 rts <- readTSGE(gseList,labels = c("0h","6h","12h","24h","48h","72h")) 
+
+## ----message=FALSE,warning=FALSE-----------------------------------------
 names(rts)
 rts$timePoints
 head(rts$samples)
