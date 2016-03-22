@@ -13,9 +13,10 @@ devtools::install_github("michmich76/ctsGE")
 OR:
 You can dowload source file from [here](https://github.com/michmich76/ctsGE/tree/master/source) and install with `install.packages`
 ### For more information and tutorial
-```{}
-vignette("ctsGE")
-```
+
+`vignette("ctsGE") in R` or enter [vignette](https://htmlpreview.github.io/?https://github.com/michmich76/ctsGE/blob/master/inst/doc/ctsGE.html)
+
+
 ###Interactive example using **ctsGE**:
 
 please see [ctsGEApp](https://michalsharabi.shinyapps.io/ctsGEApp/)
