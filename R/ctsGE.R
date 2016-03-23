@@ -1,6 +1,6 @@
 #' Read and merge a set of files containing GE data
 #'
-#' Reads and merges a set of text files containing gene expression data
+#' Reads and mergesafa a set of text files containing gene expression data
 #'
 #' @param files character vector of filenames, or alternative a named list of tables for each time point.
 #' @param path character string giving the directory containing the files. The default is the current working directory.
