@@ -2,31 +2,49 @@
 % Please edit documentation in R/ctsGE.R
 \name{index}
 \alias{index}
-\title{Indexing step for Time Series Supervised Clustering}
+\title{Indexing function}
 \usage{
 index(x, cutoff = 1)
 }
 \arguments{
 \item{x}{A numeric}
 
-\item{cutoff}{A numeric, dermine the threshold for indexing, values between \emph{cutoff and -cutoff} will get the value \bold{0}, meaning no significant change was made in gene expression. Default = 1}
+\item{cutoff}{A numeric, dermine the threshold for indexing, Default = 1}
 }
 \value{
-Gene expression profile
+Gene expression index
 }
 \description{
-Takes a numeric vector and return a profile vector that represent the gene expression pattern
+Takes a numeric vector and return an expression index
+(i.e., a sequence of 1,-1, and 0)
+}
+\details{
+The function defines limits around the center (median or mean),
++/- cutoff value in
+ median absolute deviation or standard deviation units respectively.
+ The signification level limits is determined
+ by the user with the \command{cutoff} option.
+
+Then the function calculate the new value for each time point:
+\enumerate{
+     \item \bold{0}  when gene expression at a specific time point is
+     within the center limits  (+/- cutoff).
+     \item \bold{1}  when gene expression at a specific time point was
+     greater than center top limit (+ cutoff).
+     \item \bold{-1} when gene expression at a specific time point was
+     smaller than center bottom limit (- cutoff.)}
 }
 \examples{
-rawCounts <- c(103.5, 75.1, 97.3, 27.12, 34.83, 35.53, 40.59, 30.84, 16.39, 29.29)
+rawCounts <-
+c(103.5, 75.1, 97.3, 27.12, 34.83, 35.53, 40.59, 30.84, 16.39, 29.29)
 
-(msCounts <-MadScale(rawCounts)) # standardized step with MadScale
+(sCounts <- scale(rawCounts)[,1])# standardized mean-base scaling
 
-cutoff <- seq(0.2,2,0.1)    # different cutoff produce different profiles
+cutoff <- seq(0.2,2,0.1)    # different cutoff produce different indexes
 
-for(i in cutoff){print(index(msCounts,i))}
+for(i in cutoff){print(index(sCounts,i))}
 }
 \seealso{
-\code{\link{PreparingTheProfiles}}
+\code{\link{PreparingTheIndexes}}
 }
 

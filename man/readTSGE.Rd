@@ -2,37 +2,53 @@
 % Please edit documentation in R/ctsGE.R
 \name{readTSGE}
 \alias{readTSGE}
-\title{Read and merge a set of files containing GE data}
+\title{Read and merge a set of files containing gene expression data}
 \usage{
 readTSGE(files, path = NULL, columns = c(1, 2), labels = NULL, ...)
 }
 \arguments{
-\item{files}{character vector of filenames, or alternative a named list of tables for each time point.}
+\item{files}{character vector of filenames,
+or alternative a named list of tables for each time point.}
 
-\item{path}{character string giving the directory containing the files. The default is the current working directory.}
+\item{path}{character string giving the directory containing the files.
+The default is the current working directory.}
 
-\item{columns}{numeric vector stating which two columns contain the tag names and counts, respectively}
+\item{columns}{numeric vector stating which two columns contain the tag
+names and counts, respectively}
 
-\item{labels}{character vector giving short names to associate with the libraries. Defaults to the file names.}
+\item{labels}{character vector giving short names to associate with the
+libraries.
+Defaults to the file names.}
 
 \item{...}{other are passed to read.delim}
 }
 \value{
-tsGEList
+ctsGEList
 }
 \description{
-Reads and merges a set of text files containing gene expression data
+Reads and merges a set of text files containing normalized gene expression
+data
 }
 \details{
-Each file is assumed to contained digital gene expression data for one sample (or library),
-with transcript or gene identifiers in the first column and counts in the second column.
-Transcript identifiers are assumed to be unique and not repeated in any one file. By default, the files are assumed to be tab-delimited and to contain column headings.
-The function forms the union of all transcripts and creates one big table with zeros where necessary.
+As input, the ctsGE package expects normalized expression table,
+where rows are genes and columns are samples
+Each file is assumed to contained digital gene expression data for one
+sample (or library), with transcript or gene identifiers in the first
+column and expression values in the second column.
+Transcript identifiers are assumed to be unique and not repeated in any one
+file.
+By default, the files are assumed to be tab-delimited and to contain column
+   headings.
+The function forms the union of all transcripts and creates one big table
+with zeros where necessary.
 }
 \examples{
-#  Read all .txt files from current working directory
-\dontrun{
-files <- dir(pattern="*\\\\.txt$")
-RTS <- readTSGE(files)}
+## Read all .txt files from current working directory
+data_dir <- system.file("extdata", package = "ctsGE")
+files <- dir(path=data_dir,pattern = "\\\\.xls$")
+
+# reading only 2000 genes
+rts <- readTSGE(files, path = data_dir,
+ labels = c("0h","6h","12h","24h","48h","72h"), skip = 10625 )
 }
 

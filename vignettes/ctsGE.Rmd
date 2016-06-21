@@ -3,7 +3,26 @@ title: "ctsGE Package"
 author: "Michal Sharabi-Schwager"
 date: "`r Sys.Date()`"
 abstract: >
-  **ctsGE** is a package written for **R**, that preforms clustering of time-series gene expression data. Clustering is done by a "structure-based" dissimilarity concept (see, e.g., Lin and Li 2009^[Lin J, Li Y (2009). Finding Structural Similarity in Time Series Data Using Bag-of-Patterns Representation. In Proceedings of the 21st International Conference on Scientific and Statistical Database Management, SSDBM 2009, pp. 461–477. Springer-Verlag, Berlin. ISBN 978-3-642-02278-4.] Corduas 2010^[Corduas M (2010). Mining Time Series Data: A Selective Survey. In F Palumbo, CN Lauro,MJ Greenacre (eds.), Data Analysis and Classification, Studies in Classification, Data Analysis, and Knowledge Organization, pp. 355–362. Springer-Verlag.]). Genes that share the same pattern of expression along all time points, will be grouped together. The clustering is done in two steps, we first define an expression profile for each gene, and then cluster each one of these profiles with **kmeans**. **ctsGE** package also provides the option to visualize the genes expression pattern in line graphs, made with **ggplot2** package.
+ Clustering noisy data, such as gene expression data, requires a preceding step
+ of filtering. **ctsGE** is an **R** package that preforms clustering of time-
+ series gene expression data, where alternatively to the filtering step it 
+ apply a sorting step where all the data are divided into small groups according
+ to how the time points are related to the time series median. Then, clustering
+ is performed separately on each group. Clustering is done by a 
+ "structure-based"
+ dissimilarity concept (e.g., Lin and Li 2009^[Lin J, Li Y (2009). Finding 
+ Structural Similarity in Time Series Data Using Bag-of-Patterns Representation.
+ In Proceedings of the 21st International Conference on Scientific and 
+ Statistical Database Management, SSDBM 2009, pp. 461–477. Springer-Verlag, 
+ Berlin. ISBN 978-3-642-02278-4.] Corduas 2010^[Corduas M (2010). Mining Time 
+ Series Data: A Selective Survey. In F Palumbo, CN Lauro,MJ Greenacre (eds.), 
+ Data Analysis and Classification, Studies in Classification, Data Analysis, 
+ and Knowledge Organization, pp. 355–362. Springer-Verlag.]). Thus, the 
+ clustering is done in two steps. First we define an expression index 
+ (i.e., a sequence of 1,-1, and 0), the index divides genes into groups by their
+ expression profile and then we cluster the genes set with the same index 
+ applying **K-means**. **ctsGE** package also provides an interactive tool to 
+ visualize and explore the gene-expression patterns and their sub-clusters.
 
 vignette: >
   %\VignetteIndexEntry{ctsGE Package}
@@ -13,6 +32,7 @@ vignette: >
 output: 
  BiocStyle::html_document:
     toc: true
+    
 ---
 
 
@@ -21,52 +41,80 @@ library(ctsGE)
 library(pander)
 ```
 
+# Installing ctsGE
 
 
-
-## Workflow of clustering with ctsGE
-1. Defining the expression profiles:
-
-    a) For each gene, we calculate its standardized value at all time points by `ctsGE::MadScale`: $$ GEst = \frac{GE - median(GE)}{mad(GE)}$$  
-          
-      >The user can choose to do the standardization with **scale** (***R*** *function*)  
-    b) Next we convert the new standardized values to **0 / 1 / -1**:  
-          
-          +  **0**  when gene expression at a specific time point wasn't significantly different from the other time points
-          +  **1**  when gene expression at a specific time point was significantly greater from the other time points
-          +  **-1** when gene expression at a specific time point was significantly smaller from the other time points  
-     
-        > The signification level is determined by the user with the `cutoff` option in the `PreparingTheProfiles` function.
-
-2. Clustering each profile with **kmeans** function: $$kmeans(genesInProfile,k)$$
-
-## Installing ctsGE
 ```{r,eval=FALSE,warning=FALSE,message=FALSE}
-install.packages("ctsGE_0.1.tar.gz",repos=NULL,type="source")
-
+devtools::install_github("michalsharabi/ctsGE")
 ```
 
-## Input data and preparations
-As input, the **ctsGE** package expects count data as obtained, e. g., from RNA-Seq or another high-throughput
-sequencing experiment or micoarray expiriment, in the form of a rectangular table of integer values. The table cell in the
-i-th row and the j-th column of the table tells how many reads have been mapped to gene i in time-point j. Analogously, for other types of assays, the time-points of the table might correspond e. g. to different tretment or conditions. In this vignette, we will work with, gene expression profiling in Gene expression in Cryptosporidium parvum-infected human ileocecal adenocarcinoma cells (HCT-8) (Deng et al., 2004^[Deng, M., Lancto, C. A. and Abrahamsen, M. S. (2004). Cryptosporidium parvum regulation of human epithelial cell gene expression. Int. J. Parasitol. 34, 73–82.]), an expression profiling by array extracted from the [Gene Expression Omnibus (GEO)](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE2077). For tutorial purpose and for simplification reason, we used only one replicaste out of three, overall six time-points.
+**OR:**
 
-```{r,message=FALSE, warning=FALSE}
+*Download [source](https://github.com/michalsharabi/ctsGE/tree/master/source)*
+```{r, eval=FALSE,warning=FALSE,message=FALSE }
+install.packages("ctsGE.tar.gz",repos=NULL,type="source")
+```
+
+
+
+# Workflow of clustering with ctsGE
+1. Building the `ctsGEList` object from expression data.    
+
+2. Define an expression index (i.e., a sequence of 1,-1, and 0) for each gene.  
+
+3. Cluster the genes set with the same index, applying **kmeans**: 
+$$kmeans(genesInIndex,k)$$  
+
+4. A graphic visualization of expression patterns
+
+5. Interactive visualization and exploration of genes expression data
+
+# Building the ctsGEList Object 
+As input, the **ctsGE** package expects normalized expression table, where rows
+are genes and columns are samples. It can be count data as obtained, e. g., 
+from RNA-Seq or another high-throughput sequencing experiment or microarray 
+experiment.  An example data from the [Gene Expression Omnibus (GEO)](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE2077) are used to 
+illustrate ctsGE potential. The data are expression profile of Cryptosporidium
+parvum-infected human ileocecal adenocarcinoma cells (HCT-8) 
+(Deng et al., 2004^[Deng, M., Lancto, C. A. and Abrahamsen, M. S. (2004). 
+Cryptosporidium parvum regulation of human epithelial cell gene expression. 
+Int. J. Parasitol. 34, 73–82.]), which comprise of 12,625 genes over 18 samples
+(three replicates of six developmental stages in human cancer). For tutorial
+purpose and for simplification reason, only one replicate out of three is used
+overall six time-points.
+
+## Loading data from ncbi GEO 
+
+loading the files and make a list of `matrix`:
+```{r,eval=FALSE,message=FALSE, warning=FALSE}
 library(GEOquery)
-gse2077 <- getGEO('GSE2077', GSElimits = c(1,6), GSEMatrix = FALSE) 
-gseList  <- lapply(GSMList(gse2077),function(x){Table(x)}) # list of the time series tables
-```
-
-***Sample accession numbers:***
-
-```{r,message=FALSE, warning=FALSE}
+gse2077 <- getGEO('GSE2077', GSElimits = c(1,6), GSEMatrix = FALSE)
+# list of the time series tables
+gseList <- lapply(GSMList(gse2077),function(x){Table(x)}) 
 names(gseList)
 ```
-##  Building the ctsGE Object  
-*ctsGEList()* is the function that coverts the count matrix into an ctsGE object. First, we create a group variable that tells ctsGE with samples belong to which group and supply that to *ctsGEList* in addition to the count matrix. We can then see the elements that the object contains by using the *names()* function. These elements can be accessed using the $ symbol
+
+*Building the ctsGEList Object from list of matrices:*
+```{r,eval=FALSE,message=FALSE,warning=FALSE }
+rts <- readTSGE(gseList,labels = c("0h","6h","12h","24h","48h","72h")) 
+```
+
+## Loading data from files
+Here is an example how to load the time series files from your directory, 
+in the example data was import from **ctsGE** package:
+```{r, message=FALSE,warning=FALSE}
+data_dir <- system.file("extdata", package = "ctsGE")
+files <- dir(path=data_dir,pattern = "\\.xls$")
+```
+
+*Building from a directory:*
 ```{r,message=FALSE,warning=FALSE}
 
-rts <- readTSGE(gseList,labels = c("0h","6h","12h","24h","48h","72h")) 
+rts <- readTSGE(files, path = data_dir, labels = c("0h","6h","12h","24h","48h","72h") )
+``` 
+
+**ctsGE Object summary:**
+```{r,message=FALSE,warning=FALSE }
 names(rts)
 rts$timePoints
 head(rts$samples)
@@ -82,50 +130,102 @@ pander(head(rts$tsTable))
 
 ```
 
-## Defining the expression profiles  
-We standardized the counts with [`ctsGE::MadScale`](#workflow-of-clustering-with-ctsge) (default), otherwise it's done with `scale`.  
-The profiling to **0 / 1 / -1** as describe [here](#workflow-of-clustering-with-ctsge), determine by the `cutoff` value:  
-After standardization, `cutoff` defines the degree of change in gene expression level throughout the given time points.  
-How much does the gene expression value distance from the `median` of the gene, in a certain time point. The distance from the `median` is measured in `mad`(median absolute deviation) units, in case of using `scale` method the distance is from the `mean` in `sd` units.  
-The user can decide what is the degree, in which the expression level, is not significant enough or not informative enough for their experiment purpose.  For example: if `cutoff` is set to 0.7, genes that their standardized value falls between *0.7 to -0.7* will get the new value **0** because their expression level was not significantly different from other time points expression level.  We recommand to check different `cutoff` values and see which one provides profiles that representive of any expression pattern of your data.
+# Defining the expression index  
+1. Expression matrix is first standardized. The function default standardize 
+method is a median-base scaling, the user can alternatively use a mean-based 
+scaling. The new scaled values represent the distance of each gene at a certain
+time point from its center, median or mean, in median absolute deviation (mad) 
+units or standard deviation (sd) units respectively. 
 
-###Checking different cutoffs  
+2. Next, the standardized values converted to index values, that indicate 
+whether gene expression is above, below or within limits around the center 
+of time series i.e., **1 / -1 / 0**., respectively. The user defines a 
+parameter cutoff that determines the limits around the gene expression center.
+Then the function calculates the index value at each time point according to:
 
-```{r,message=FALSE,warning=FALSE,results="asis"}
-raw.counts <- head(rts$tsTable)
-scaled.counts <- MadScale(raw.counts)
-cutoffs <- seq(0.5,1.5,0.1)
-check.list <- lapply(cutoffs,function(i){apply(apply(scaled.counts,2,index,i),1,paste,collapse="")})
-check.matrix <- do.call("cbind",check.list); colnames(check.matrix) <- cutoffs
+    + **0**   where standardized value is within limits (+/- cutoff)
+    + **1**   where standardized value exceeds top limit (+ cutoff)
+    + **-1**  where standardized value exceeds bottom limit (- cutoff)
+
+3. The ` +/- cutoff` parameter defines a reference range to which data is 
+compared, when the range is too big more time series points will fall into
+it and will get the index value 0, this may be misleading. When the range is too
+small it can results in too many index groups and will be too sensitive to small
+fluctuations in the time series index. It is recommended to test different 
+cutoff values before deciding which one to use. See below how to check.
+
+##Checking different cutoffs 
+The function `PreparingTheIndexes` generates an expression index 
+(i.e., a sequence of 1,-1, and 0), that represents the expression pattern along
+time points for each gene. Setting different limits of the center era 
+(with the parameter cutoff) will change the index for each gene expression 
+profile and consequently the number of genes in the index groups will be 
+changed. Following the idea that instead of filtering “irrelevant” genes to 
+reduce the noise the clustering will be performed on small gene groups, one 
+would like to choose a `cutoff` value, in a way it minimize the number of genes
+in each group, i.e., generate index groups of an equal size.
+
+    In the next example, the lowest chi-squared will be choosen
+
+```{r,message=FALSE,warning=FALSE}
+
+cutoffs <- seq(0.3,1.5,0.05)
+prts <- list()
+
+for (i in 1:length(cutoffs)){
+    prts[[i]] <- PreparingTheIndexes(x = rts, cutoff = cutoffs[i], mad.scale = TRUE)
+    test  <- chisq.test(table(prts[[i]]$index$index))
+    print(paste0("chi-squared value for cutoff = ",cutoffs[i]," is: ",round(test$statistic[[1]])))
+}
+
 ```
-**The `raw.counts` for check**
-```{r,message=FALSE,echo=FALSE,warning=FALSE,results="asis"}
+**`cutoff = 0.55` got the lowest chi-squared value**
 
-panderOptions("table.style","simple")
-pander(raw.counts)
+### Index overview after choosing a `cutoff`
+In order to get an idea of how the data looks, and to check what is the nature 
+of the indexes that was made due to certain `cutoff` value, number of zeros at 
+each index will be counted. In this tutorial example, index can have no zeros, 
+one zero until six zeros, overall the indexes and genes divided into seven 
+groups. Indexes that most of their time points are zeros (in this example more 
+than three time points), are expected to show pattern of genes that their 
+expression was not change much along time points. Alternatively, indexes with 
+less zeros to none (less than two in the example) will show patterns of genes 
+that their expression was up or down regulated at each time point.
+
+    With cutoff = 
+    0.55 most of the genes was assgined to indexes with three zeros or two, 
+    indicating variaty in expression patterns
+
+```{r,message=FALSE,warning=FALSE,echo=FALSE}
+library(dplyr)
+
+count_zero <- 
+  function(x){
+    sum(strsplit(x,"")[[1]]==0)}
+
+
+i <- which(cutoffs==0.55) # choosing cutoff 0.55
+
+tbl <- prts[[i]]$index %>%
+    # counting genes at each index
+    group_by(index)%>% summarise(size=length(index)) %>% 
+    # counting the number of zeros at each index
+    group_by(index)%>% mutate(nzero=count_zero(as.character(index))) %>% 
+    # groups genes by the number of zeros and sum them
+    group_by(nzero) %>% summarise(genes=round(sum(size)/12625,1)) 
+
+tmp = which(0:6%in%tbl$nzero==0)-1
+tmp_df = data.frame(nzero=tmp,genes=rep(0,length(tmp)))
+tbl <- bind_rows(tbl,tmp_df) %>% arrange(nzero)
+labs <- seq(0,max(tbl$genes), by = 0.2)
+barplot(tbl$genes, main = cutoffs[i], names.arg = tbl$nzero,axes = FALSE)
+axis(side = 2, at = labs, labels = paste0(labs * 100, "%"))
 ```
 
-**The `scaled.counts` for check**
-
-```{r,message=FALSE,echo=FALSE,warning=FALSE,results="asis"}
-
-panderOptions("table.style","simple")
-pander(scaled.counts)
-```
-
-**Profiles of different `cutoffs`:**  
-*you can see when cutoffs is between 1.1 to 1.5 the profiles doesn't changes from one to another.*
-
-```{r,message=FALSE,echo=FALSE,warning=FALSE,results="asis"}
-
-panderOptions("table.style","simple")
-pander(check.matrix)
-```
-
-###Preparing the profiles for our data  
-*We chosen to continue with* **`cutoff = 0.8`**
+##Preparing the indexes for the data  
+**`cutoff = 0.55`** *was chosen* 
 ```{r, message=FALSE,warning=FALSE}
-prts <- PreparingTheProfiles(x = rts, cutoff = 0.8, mad.scale = TRUE) 
+prts <- PreparingTheIndexes(x = rts, cutoff = 0.55, mad.scale = TRUE) 
 names(prts)
 ```
  
@@ -140,61 +240,105 @@ pander(head(prts$scaled))
 ```
 
 
-***Gene expression after profiling with `cutoff = 0.8`:***
-` head(prts$profile) `
+***Gene expression indexing with `cutoff = 0.55`:***
+` head(prts$index) `
 ```{r,message=FALSE,echo=FALSE,warning=FALSE,results="asis"}
 
 panderOptions("table.style","simple")
-pander(head(prts$profiles)) 
+pander(head(prts$index)) 
 ```
 
-## Clustering each profile with kmeans  
-The clustering is done with `kmeans`, in order to choose the right k (number of clusters) such that the clusters are compact and well separated, we compute ratio of the within cluster sum of squares (WSS) to the total sum of squares (TSS).  
-when: $\frac{WSS}{TSS} < 0.2$ this is the optipal k.  
+## Clustering each index with K-means  
+The clustering is done with K-means. In order to choose an optimal k for K-means
+clustering, the Elbow method was applied 
+(Thorndike, 1953^[Thorndike, R.L. (1953). Who Belongs in the Family? 
+Psychometrika, 18(4), 267–276.]); this method looks at the percentage of 
+variance explained as a function of the number of clusters: One should choose 
+a number of clusters so that adding another cluster doesn't give much better 
+modeling of the data.  First of all, ratio of the within cluster sum of squares 
+(WSS) to the total sum of squares (TSS), is computed for different values of 
+k (i.e., 1, 2, 3 ...).  WSS also known as sum of squared error (SSE) which 
+decreases as k gets larger, the idea of the elbow method is to choose the k 
+at which the SSE decreases abruptly, this happens when the computed ratio value 
+of WSS to TSS first drops from 0.2. 
+
+$\frac{WSS}{TSS} < 0.2$
   
-*If you want to cluster a specific profile and choose the number of cluster you can skip this step and use:* **`PlotProfilesClust`** *function*.
-```{r,message=FALSE,warning=FALSE,eval=FALSE}
-ClustProfiles <- ClustProfiles(prts, scaling = TRUE)
-names(ClustProfiles)
-```
-   
-
 ```{r,message=FALSE, warning=FALSE,eval=FALSE}
-# table of the profile and the recommended k that were found by the function 
-head(ClustProfiles$optimalK)
+ClustIndexes <- ClustIndexes(prts, scaling = TRUE)
+names(ClustIndexes)
+# table of the index and the recommended k that were found by the function 
+head(ClustIndexes$optimalK)
 
-# Table of clusters profile for each gene
-head(ClustProfiles$ClusteredProfilesTable) 
+# Table of clusters index for each gene
+head(ClustIndexes$ClusteredIndexesTable) 
 ```
 
-## A graphic visualization of a profile  
-The user choose the profile and the number of clusters to show, you can do that either after runing `ClustProfiles`, or not.  
-Sometimes it takes too long to calculate all the clusters for all the profiles, so one can make clusters for a specific profile of his  choice, and also decide whether to supply the k or let the function calculate the optimal k for the selected profile.  
+Running `kmeans` and calculating the optimal k for each one of the indexes in 
+the data may take long. In oreder to shorten this step the user can skip that 
+step and directly view a specific index and its clusters, by running either 
+the `PlotIndexesClust()` or the `ctsGEShinyApp()` function
+
+# A graphic visualization of an index  
+The `PlotIndexesClust()` function generates graphs and tables of a specific 
+index and its clusters, the user decide whether to supply the k or let the 
+function calculate the k for the selected index. 
+
 ```{r,message=FALSE,warning=FALSE}
-
-profilePlot <- PlotProfilesClust(prts,idx = "110000" , scaling = TRUE)
-names(profilePlot)
+indexPlot <- PlotIndexesClust(prts,idx = "1100-1-1",scaling = TRUE)
+names(indexPlot)
 ```
 
-
-
-***Genes in '110000' profile and their clusters (k was chosen by the function):***  
-*Number of clusters (k) for '110000' is:* **`length(profilePlot $graphs)`**
+***Genes in '1100-1-1' index and their clusters ***
+***(k was chosen by the function):***  
+*Number of clusters (k) for '1100-1-1' is:* **`length(indexPlot$graphs)`**
 ```{r,message=FALSE,warning=FALSE,echo=FALSE}
-length(profilePlot $graphs)
+length(indexPlot$graphs)
 ```
 
-**Table of genes in '110000' profile, seperated to clusters:**
-`head(profilePlot[[1]])`
+**Table of genes in '1100-1-1' index, seperated to clusters:**
+`head(indexPlot[[1]])`
 
 ```{r,message=FALSE,warning=FALSE,results="asis",echo=FALSE}
 
 panderOptions("table.style","rmarkdown")
-pander(head(profilePlot[[1]]))
+pander(head(indexPlot[[1]]))
 ```
 
-***Line graphs of the genes expression pattern in '110000' profile, separated to clusters:***
+For this example the index `1100-1-1` is used, looking at this index it can be 
+assumed that the expression of genes that belong to this index where down 
+regulated along timepoints, Since the index only state whether gene expression 
+was up-regulated (1), down-regulated (-1) or stayed the same (0), genes subset 
+of the same profile will usually show more than one expression pattern. 
+K-means helps to distinguish these patterns from one another.  
 
-```{r,message=FALSE,warning=FALSE,fig.width=10}
-profilePlot$graphs
+***Line graphs of the genes expression pattern in '1100-1-1' index,***
+***separated to clusters:***
+
+```{r,message=FALSE,warning=FALSE}
+indexPlot$graphs
 ```
+
+# GUI for interactive exploration of gene expression data
+
+The `ctsGEShinyApp` function takes two arguments, the ctsGE object and a cutoff,
+and opens an html page as a GUI. When in the web page, the user chooses the 
+profile to visualize and the number of clusters (k parameter for K-means) to 
+show. On the main panel the line graph of the profile separated to the clusters
+will show, and a list of the genes and theirs expression will also be available.
+The tables and figures can be download.
+
+## Screenshots of the GUI:
+
+```{r,message=FALSE,warning=FALSE,eval=FALSE}
+ctsGEShinyApp(rts,cutoff = 0.55)
+```
+
+###The graph tab:
+![My Figure](/home/michal/MyPack/ctsGE/vignettes/pics/ctsGEShinyApp_tab1.png)
+
+### The table tab:
+![My Figure](/home/michal/MyPack/ctsGE/vignettes/pics/ctsGEShinyApp_tab2.png)
+
+
+
