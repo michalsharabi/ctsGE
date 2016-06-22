@@ -53,7 +53,7 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,...){
                 stop(paste("Repeated tag sequences in", fn))
             }
         }
-        }
+    }
 
     else{
         d <- files
@@ -65,7 +65,7 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,...){
                     "Repeated tag sequences in table no.",i,"in the list"))
             }
         }
-        }
+    }
 
     tags <- unique(unlist(taglist))
     ntags <- length(tags)
@@ -78,15 +78,25 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,...){
         if(!is.list(files)){ colnames(x$tsTable) <-
             x$samples <- limma::removeExt(files)
         }else{colnames(x$tsTable) <- x$samples <- names(files)}
-        }else{x$samples <- colnames(x$tsTable)}
+    }else{x$samples <- colnames(x$tsTable)}
     for (i in 1:nfiles) {
         aa <- match(taglist[[i]], tags)
         x$tsTable[aa, i] <- as.numeric(d[[i]][, columns[2]])
-        }
+    }
+
     x$tags <- tags
     x$timePoints <- nfiles
-    structure(x,class = "ctsGEList")
+
+    ## filtering out genes with low expression
+    tmp <- apply(t(x$tsTable),2,mad)
+    if(sum(tmp==0)){
+        x$tsTable <- x$tsTable[names(which(tmp!=0)),]
+        x$tags <- names(which(tmp!=0))
+        print(paste0(sum(tmp==0)," Genes were remove out of data due to low expression"))
     }
+
+    structure(x,class = "ctsGEList")
+}
 
 #' Define an expression index for each gene
 #'
@@ -149,7 +159,7 @@ PreparingTheIndexes = function(x,cutoff=1,mad.scale=TRUE){
     x$index <- cbind(as.data.frame(idx),index=apply(idx,1,paste,collapse=""))
     x$cutoff <- cutoff
     structure(x,class = "ctsGEList")
-    }
+}
 
 #' Indexing function
 #'
@@ -255,7 +265,7 @@ ClustIndexes = function(x,scaling=TRUE){
                                                     ncol(x$index)])
     }else { tmp <-
         cbind(as.data.frame(x$tsTable),index=x$index[rownames(x$scaled),
-                                                    ncol(x$index)])}
+                                                     ncol(x$index)])}
 
 
     for(idx in as.character(unique(tmp$index))){
@@ -269,17 +279,17 @@ ClustIndexes = function(x,scaling=TRUE){
                 # Apply k-means to tbl: fit_km
                 fit_km <- kmeans(tbl,k,nstart = 25)
                 opt <- fit_km$tot.withinss/fit_km$totss < 0.2
-                }
+            }
             K <-  k #where: WSS / TSS < 0.2 this is the optimal k
             clust <-   fit_km$cluster
-            }else{
-                K <- 1
-                clust <- rep(1,nrow(tbl))}
+        }else{
+            K <- 1
+            clust <- rep(1,nrow(tbl))}
 
         kindex[[idx]] <-  c(nrow(tbl),K)
         clust_tbl[[idx]] <- data.frame(clusters=clust,index=idx)
         rownames(clust_tbl[[idx]]) <- rownames(tbl)
-        }
+    }
 
     names(clust_tbl) <-  NULL
     x$optimalK <-  do.call("rbind",kindex)
@@ -331,46 +341,52 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
     ggplot_list <- list()
     clust_tbl <-  list()
     kindex <-  list()
+    genes <- rownames(x$index[x$index[,"index"]==idx,])
     if(length(x) < 7){stop("Please run PreparingTheIndexes first")}
-    if(!scaling){tbl <- x$tsTable[rownames(x$index[x$index[,"index"]==idx,]),]
-    } else{tbl <- x$scaled[rownames(x$index[x$index[,"index"]==idx,]),]}
+    if(!scaling){tbl <- x$tsTable[genes,]
+    } else{tbl <- x$scaled[genes,]}
 
-    tbl <- as.data.frame(tbl)
+    if(length(genes) > 1 ) {tbl <- as.data.frame(tbl)
+    }else{
+        tbl <- data.frame(t(matrix(tbl)))
+        colnames(tbl) <- x$samples
+        rownames(tbl) <- genes
+    }
     if(!is.null(k)){
         fit_km <- kmeans(tbl,k)
         tbl[names(fit_km$cluster),"clusters"] <- fit_km$cluster
+    }else{
+        if(length(x) > 7){
+            k <- x$optimalK[rownames(x$optimalK)==idx,"k"]
+            tbl1 <- x$ClusteredIdxTable
+            tags <- rownames(tbl1[tbl1[,"index"]==idx,])
+            tbl[tags,"clusters"] <- tbl1[tbl1[,"index"]==idx,"clusters"]
         }else{
-            if(length(x) > 7){
-                k <- x$optimalK[rownames(x$optimalK)==idx,"k"]
-                tbl1 <- x$ClusteredIdxTable
-                tags <- rownames(tbl1[tbl1[,"index"]==idx,])
-                tbl[tags,"clusters"] <- tbl1[tbl1[,"index"]==idx,"clusters"]
-                }else{
-                    if(nrow(tbl) > 9){
-                        k = 1
-                        fit_km <- kmeans(tbl,k,nstart = 25)
-                        opt <- fit_km$tot.withinss/fit_km$totss < 0.2
-                        while (!opt) {
-                            k=k+1
-                            # Apply k-means to tbl: fit_km
-                            fit_km <- kmeans(tbl,k,nstart = 25)
-                            opt <- fit_km$tot.withinss/fit_km$totss < 0.2
-                            }
-                        K <-  k #where: WSS / TSS < 0.2 this is the optimal k
-                        clust <-   fit_km$cluster
-                        }else{
-                            K <- 1
-                            clust <- rep(1,nrow(tbl))}
-                    kindex[[idx]] <-  c(nrow(tbl),K)
-                    clust_tbl[[idx]] <- data.frame(clusters=clust,index=idx)
-                    rownames(clust_tbl[[idx]]) <- rownames(tbl)
-                    fit_km <- kmeans(tbl,k)
-                    tbl[names(fit_km$cluster),"clusters"] <- fit_km$cluster
+            if(length(genes) > 9){
+                tbl <- as.data.frame(tbl)
+                k = 1
+                fit_km <- kmeans(tbl,k,nstart = 25)
+                opt <- fit_km$tot.withinss/fit_km$totss < 0.2
+                while (!opt) {
+                    k=k+1
+                    # Apply k-means to tbl: fit_km
+                    fit_km <- kmeans(tbl,k,nstart = 25)
+                    opt <- fit_km$tot.withinss/fit_km$totss < 0.2
                 }
-            }
+                K <-  k #where: WSS / TSS < 0.2 this is the optimal k
+                clust <-   fit_km$cluster
+            }else{
+                K <- 1
+                clust <- rep(1,nrow(tbl))}
+            kindex[[idx]] <-  c(nrow(tbl),K)
+            clust_tbl[[idx]] <- data.frame(clusters=clust,index=idx)
+            rownames(clust_tbl[[idx]]) <- rownames(tbl)
+            tbl[,"clusters"] <- clust
+        }
+    }
 
-    tmp <- cbind(tags=rownames(tbl),tbl)
-    for(i in 1:k){
+    tmp <- cbind(tags=genes,tbl)
+    for(i in 1:K){
         x.m <- reshape2::melt(tmp[tmp$cluster==i,c("tags",x$samples)])
         colnames(x.m) <- c("tags","tp","exp")
         gplot <-
@@ -378,13 +394,13 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
                             ggplot2::aes_string(y="exp",x="tp",colour="tags",
                                                 group="tags"))+
             ggplot2::labs(title =paste0("Index: ",idx," Cluster: ",i),
-                        x = "Time", fill= NULL, y = "Expression Value") +
+                          x = "Time", fill= NULL, y = "Expression Value") +
             ggplot2::theme(legend.position="none")
 
         gplot <- gplot +ggplot2::geom_line()
         name <- paste0("Clust_",i,"_",idx)
         ggplot_list[[name]] <- gplot
-        }
+    }
 
     plot[[name]] <- tbl
     plot$graphs <- ggplot_list
@@ -432,18 +448,18 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
         fit <- kmeans(tmp, g,nstart = 25)
         kmeans.groups <-
             cbind(merge(data.frame(fit$cluster),tmp,by="row.names",all=TRUE),
-                index=tbl$index)
+                  index=tbl$index)
         colnames(kmeans.groups)[1:2] <- c("genes","clusters")
 
         return(kmeans.groups)
-        }
+    }
 
     get_plot_output_list <- function(index,input_n,scaling=1) {
         set.seed(100)
         if(!scaling) {
             gplot <- PlotIndexesClust(prts,index,input_n,TRUE)
         }else{
-                gplot <- PlotIndexesClust(prts,index,input_n,FALSE)}
+            gplot <- PlotIndexesClust(prts,index,input_n,FALSE)}
         # Insert plot output objects the list
         plot_output_list <- lapply(1:input_n, function(i) {
             plotname <- paste("plot",index, i, sep="_")
@@ -452,8 +468,8 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
             plot_output_object <- shiny::renderPlot({
                 gg <- gplot[[2]][[i]]
                 print(gg)
-                })
             })
+        })
         return(do.call(shiny::tagList,plot_output_list))
     }
 
@@ -463,60 +479,60 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
             shiny::headerPanel(title),
             shiny::sidebarPanel(width = 2,
                                 shiny::selectInput("index","Select an Index:",
-                                                choices = idx,
-                                                selected = idx[1]),
+                                                   choices = idx,
+                                                   selected = idx[1]),
                                 shinyapps::hr(),
                                 shiny::sliderInput("n", "Number of clusters",
-                                                min = 1,max= 10,
-                                                value= 1,step= 1),
+                                                   min = 1,max= 10,
+                                                   value= 1,step= 1),
                                 shiny::checkboxInput("scale",
-                                                "Raw values",value = FALSE)
-                                ),
+                                                     "Raw values",value = FALSE)
+            ),
             shiny::mainPanel(width = 10,
                              shiny::tabsetPanel(
                                  shiny::tabPanel("Time series",
-                                                icon =shiny::icon("line-chart"),
-                                                shiny::uiOutput("plots")),
+                                                 icon =shiny::icon("line-chart"),
+                                                 shiny::uiOutput("plots")),
                                  shiny::tabPanel( "Genes Table",
-                                                icon = shiny::icon("table"),
-                                                shiny::uiOutput("table"))
-                                )
-                            )
-            ),#pageWithSidebar
+                                                  icon = shiny::icon("table"),
+                                                  shiny::uiOutput("table"))
+                             )
+            )
+        ),#pageWithSidebar
 
         server = function(input, output,session) {
             # filter input$index
             filtered <- shiny::reactive({
                 if (is.null(input$index)) {
                     return(NULL)
-                    }
+                }
 
                 if(!input$scale){
                     tbl <- PlotIndexesClust(prts,input$index,k = input$n)[[1]]
                     tbl <- cbind(genes=rownames(tbl)
-                                ,clusters=as.factor(tbl$clusters),
-                                data.frame(tbl[,prts$samples]),
-                                index=input$index)
+                                 ,clusters=as.factor(tbl$clusters),
+                                 data.frame(tbl[,prts$samples]),
+                                 index=input$index)
                     rownames(tbl) <- NULL
                     tbl
-                    }else{
-                        tbl <-
-                            PlotIndexesClust(prts,
-                                            input$index,k = input$n,
-                                            scaling = FALSE)[[1]]
-                        tbl <- cbind(genes=rownames(tbl),
-                                    clusters=as.factor(tbl$clusters),
-                                    data.frame(tbl[,prts$samples]),
-                                    index=input$index)
-                        rownames(tbl) <- NULL
-                        tbl
-                        }
-                })
+                }else{
+                    tbl <-
+                        PlotIndexesClust(prts,
+                                         input$index,k = input$n,
+                                         scaling = FALSE)[[1]]
+                    tbl <- cbind(genes=rownames(tbl),
+                                 clusters=as.factor(tbl$clusters),
+                                 data.frame(tbl[,prts$samples]),
+                                 index=input$index)
+                    rownames(tbl) <- NULL
+                    tbl
+                }
+            })
 
             shiny::observe({
                 output$plots <- shiny::renderUI({
                     get_plot_output_list(input$index,input$n, input$scale)
-                    })
+                })
                 output$table <- shiny::renderUI({
                     if (is.null(filtered())) {return()}
                     output$tmp <-
@@ -527,21 +543,21 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                                                 clear = FALSE),
                                             server = TRUE,
                                             extensions =c('Buttons',
-                                                        'Responsive',
-                                                        'FixedHeader'),
+                                                          'Responsive',
+                                                          'FixedHeader'),
                                             options = list(
                                                 dom = 'TB<"clear">lfrtip',
                                                 lengthMenu =c(10,50,100,
-                                                            nrow(filtered())),
+                                                              nrow(filtered())),
                                                 fixedHeader = TRUE,
                                                 buttons = c('copy',
                                                             'csv',
                                                             'excel',
                                                             'print')
-                                                ))
+                                            ))
                     DT::dataTableOutput("tmp")
-                    })#renderUI
+                })#renderUI
             })#end observe
-            }
+        }
     )
 }
