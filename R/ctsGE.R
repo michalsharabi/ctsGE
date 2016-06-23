@@ -355,6 +355,7 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
     if(!is.null(k)){
         fit_km <- kmeans(tbl,k)
         tbl[names(fit_km$cluster),"clusters"] <- fit_km$cluster
+        K <- k
     }else{
         if(length(x) > 7){
             k <- x$optimalK[rownames(x$optimalK)==idx,"k"]
