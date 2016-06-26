@@ -340,6 +340,7 @@ ClustIndexes = function(x,scaling=TRUE){
 #'
 
 PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
+    set.seed(100)
     plot <- list()
     ggplot_list <- list()
     clust_tbl <-  list()
@@ -454,7 +455,7 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
     idx <- as.character(unique(prts$index[,"index"]))
 
     clusters <- function(tbl,g){
-        set.seed(100)
+        #set.seed(100)
         tmp <- as.matrix(tbl[,c(1:rts$timePoints)])
         fit <- kmeans(tmp, g,nstart = 25)
         kmeans.groups <-
@@ -514,7 +515,7 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                 if (is.null(input$index)) {
                     return(NULL)
                 }
-
+                set.seed(100)
                 if(!input$scale){
                     PlotIndexesClust(prts,input$index,k = input$n)
                     }else{
@@ -529,6 +530,11 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                     get_plot_output_list(list_plot)
                 })
                 tbl <- filtered()[[1]]
+                tbl <- cbind(genes=rownames(tbl),
+                            clusters=as.factor(tbl$clusters),
+                            data.frame(tbl[,prts$samples]),
+                            index=input$index)
+                rownames(tbl) <- NULL
                 output$table <- shiny::renderUI({
                     if (is.null(tbl)) {return()}
                     output$tmp <-
@@ -539,12 +545,11 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                                                 clear = FALSE),
                                             server = TRUE,
                                             extensions =c('Buttons',
-                                                          'Responsive',
                                                           'FixedHeader'),
                                             options = list(
                                                 dom = 'TB<"clear">lfrtip',
                                                 lengthMenu =c(10,50,100,
-                                                              nrow(filtered())),
+                                                              nrow(tbl)),
                                                 fixedHeader = TRUE,
                                                 buttons = c('copy',
                                                             'csv',
