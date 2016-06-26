@@ -455,19 +455,16 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
         return(kmeans.groups)
     }
 
-    get_plot_output_list <- function(index,input_n,scaling=1) {
-        set.seed(100)
-        if(!scaling) {
-            gplot <- PlotIndexesClust(prts,index,input_n,TRUE)
-        }else{
-            gplot <- PlotIndexesClust(prts,index,input_n,FALSE)}
+    get_plot_output_list <- function(plot_list) {
+        #set.seed(100)
+
         # Insert plot output objects the list
-        plot_output_list <- lapply(1:input_n, function(i) {
-            plotname <- paste("plot",index, i, sep="_")
+        plot_output_list <- lapply(1:length(plot_list), function(i) {
+            plotname <- names(plot_list)[i]
             plot_output_object <-
                 shiny::plotOutput(plotname, height = 280, width = 250)
             plot_output_object <- shiny::renderPlot({
-                gg <- gplot[[2]][[i]]
+                gg <- plot_list[[i]]
                 print(gg)
             })
         })
@@ -509,35 +506,23 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                 }
 
                 if(!input$scale){
-                    tbl <- PlotIndexesClust(prts,input$index,k = input$n)[[1]]
-                    tbl <- cbind(genes=rownames(tbl)
-                                 ,clusters=as.factor(tbl$clusters),
-                                 data.frame(tbl[,prts$samples]),
-                                 index=input$index)
-                    rownames(tbl) <- NULL
-                    tbl
-                }else{
-                    tbl <-
-                        PlotIndexesClust(prts,
-                                         input$index,k = input$n,
-                                         scaling = FALSE)[[1]]
-                    tbl <- cbind(genes=rownames(tbl),
-                                 clusters=as.factor(tbl$clusters),
-                                 data.frame(tbl[,prts$samples]),
-                                 index=input$index)
-                    rownames(tbl) <- NULL
-                    tbl
-                }
+                    PlotIndexesClust(prts,input$index,k = input$n)
+                    }else{
+                        PlotIndexesClust(prts,input$index,k = input$n,
+                                         scaling = F)}
             })
 
             shiny::observe({
+                list_plot <- filtered()[[2]]
                 output$plots <- shiny::renderUI({
-                    get_plot_output_list(input$index,input$n, input$scale)
+
+                    get_plot_output_list(list_plot)
                 })
+                tbl <- filtered()[[1]]
                 output$table <- shiny::renderUI({
-                    if (is.null(filtered())) {return()}
+                    if (is.null(tbl)) {return()}
                     output$tmp <-
-                        DT::renderDataTable(filtered(),
+                        DT::renderDataTable(tbl,
                                             rownames = FALSE,
                                             filter=list(
                                                 position = 'top',
