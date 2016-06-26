@@ -20,19 +20,15 @@ Takes a numeric vector and return an expression index
 }
 \details{
 The function defines limits around the center (median or mean),
-+/- cutoff value in
- median absolute deviation or standard deviation units respectively.
- The signification level limits is determined
- by the user with the \command{cutoff} option.
++/- cutoff value in median absolute deviation (MAD) or standard deviation
+(SD) units respectively.The user defines a parameter cutoff that determines
+the limits around the gene-expression center. Then the function calculates
+the index value at each time point according to:
 
-Then the function calculate the new value for each time point:
 \enumerate{
-     \item \bold{0}  when gene expression at a specific time point is
-     within the center limits  (+/- cutoff).
-     \item \bold{1}  when gene expression at a specific time point was
-     greater than center top limit (+ cutoff).
-     \item \bold{-1} when gene expression at a specific time point was
-     smaller than center bottom limit (- cutoff.)}
+     \item \bold{0:}  standardized value is within the limits (+/- cutoff)
+     \item \bold{1:}  standardized value exceeds the upper limit (+ cutoff)
+     \item \bold{-1:} standardized value exceeds the lower limit (- cutoff)}
 }
 \examples{
 rawCounts <-

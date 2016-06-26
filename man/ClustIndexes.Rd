@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctsGE.R
 \name{ClustIndexes}
 \alias{ClustIndexes}
-\title{Clustering the indexes applying kmeans}
+\title{Clustering the indexes applying K-means}
 \usage{
 ClustIndexes(x, scaling = TRUE)
 }
@@ -23,24 +23,25 @@ Clustering each index, that was predifined by
 \code{\link{PreparingTheIndexes}}, with \code{\link{kmeans}}.
 }
 \details{
-In order to choose a "good" k for K-means clustering,
-we apply the Elbow method:
-First of all, compute the sum of squared error (SSE) for different
-values of k (for example 1-10).
-The plot of k against the SSE shows that the error decreases as
-k gets larger;
-The idea of the elbow method is to choose the k at which the SSE
-decreases abruptly.
-In order to detect the right k where the SSE decreases abruptly,
-we compute ratio of the within cluster sum of squares(WSS=SSE) to the total
-sum of squares(TSS),and assuming that ratio of less than 0.2 indicate that
-from that point error doesn't decrease much and adding another cluster
-doesn't give much better modeling of the data.
+The clustering is done with K-means. To choose an optimal k for
+ K-means clustering, the Elbow method was applied, this method looks at the
+ percentage of variance explained as a function of the number of clusters: the
+ chosen number of clusters should be such that adding another cluster does
+ not give much better modeling of the data. First, the ratio of the
+ within-cluster sum of squares (WSS) to the total sum of squares (TSS) is
+ computed for different values of k (i.e., 1, 2, 3 ...). The WSS, also known
+ as sum of squared error (SSE), decreases as k gets larger. The Elbow method
+ chooses the k at which the SSE decreases abruptly. This happens when the
+ computed value of the WSS-to-TSS ratio first drops from 0.2.
 
-By default data is standardize before clustering,
-for clustering the raw counts set the \command{\strong{scaling}}
-parameter to
- FALSE.
+ Running \code{\link{kmeans}} and calculating the optimal k for each one of
+ the indexes in the data could take a long time. To shorten the procedure the
+ user can skip this step altogether and directly view a specific index and
+ its clusters by running either the \code{\link{PlotIndexesClust}} or the
+ \code{\link{ctsGEShinyApp}} function.
+
+ By default data is standardize before clustering,for clustering
+ the raw counts set the \command{\strong{scaling}} parameter to FALSE.
 }
 \examples{
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctsGE.R
 \name{PlotIndexesClust}
 \alias{PlotIndexesClust}
-\title{A graphic visualization of an index}
+\title{Graphic visualization of an index}
 \usage{
 PlotIndexesClust(x, idx, k = NULL, scaling = TRUE)
 }
@@ -16,18 +16,18 @@ PlotIndexesClust(x, idx, k = NULL, scaling = TRUE)
 calculate what is the optimal k for the index.}
 
 \item{scaling}{A boolean, default to TRUE,
-does the data should be standardized before clustered with kmeans.}
+does the data should be standardized before clustered with K-means.}
 }
 \value{
 A list with two objects:
- \enumerate{\item Table of the index and its clusters
+ \enumerate{\item Table of of a specific index and its clusters
             \item Gene expression pattern graphs
             for each one of the clusters}
 }
 \description{
-Line graphs made with \code{\link{ggplot}} of a index and its clusters -
-the user choose the index to show,
-clustering is done with \code{\link{kmeans}}
+The function generates graphs and tables of a specific index and its
+clusters. The user decides whether to supply the k or let the function
+calculate the k for the selected index
 }
 \examples{
 

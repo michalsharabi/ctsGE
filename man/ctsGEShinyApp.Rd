@@ -26,6 +26,14 @@ Produce and launch Shiny app for interactive exploration of gene expression
  data.
 For more information about shiny apps \cite{http://shiny.rstudio.com/}
 }
+\details{
+The `ctsGEShinyApp` function takes two arguments the ctsGE object
+and a cutoff,and opens an html page as a GUI. On the web page, the user
+chooses the profile to visualize and the number of clusters (k parameter for
+ K-means) to show. The line graph of the profile separated into the clusters
+ will show in the main panel, and a list of the genes and their expressions
+ will also be available. The tables and figures can be downloaded.
+}
 \examples{
 
 \dontrun{

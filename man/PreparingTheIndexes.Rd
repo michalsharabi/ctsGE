@@ -27,23 +27,24 @@ Reads the table of genes expression and return an expression index for each
 gene.
 }
 \details{
-After the standardize step, there is an indexing step to convert
-each time point to \strong{0, 1, -1}:
+1. First, the expression matrix is standardized. The function
+default standardizing method is a median-based scaling; alternatively, a
+mean-based scaling can be used. The new scaled values represent the distance
+of each gene at a certain time point from its center, median or mean,
+in median absolute deviation (MAD) units or standard deviation (SD) units,
+respectively.
 
- The function defines limits around the center, median or mean, +/- cutoff
- value in median absolute deviation(mad) or standard deviation(sd) units
- respectively.
- The signification level limit is determined by the user with the
- \command{cutoff} option.
+2. Next, the standardized values are converted to index values that indicate
+whether gene expression is above, below or within the limits around the
+center of the time series, i.e., **1 / -1 / 0**, respectively. The user
+defines a parameter cutoff that determines the limits around the
+gene-expression center. Then the function calculates the index value at each
+time point according to:
 
- Then the function calculate a value to each time point according to:
 \enumerate{
-        \item \bold{0}  when gene expression at a specific time point is
-        within the center limits (+/- cutoff).
-        \item \bold{1}  when gene expression at a specific time point is
-        greater than center top limit (+ cutoff).
-        \item \bold{-1} when gene expression at a specific time point is
-        smaller than center bottom limit (- cutoff).}
+     \item \bold{0:}  standardized value is within the limits (+/- cutoff)
+     \item \bold{1:}  standardized value exceeds the upper limit (+ cutoff)
+     \item \bold{-1:} standardized value exceeds the lower limit (- cutoff)}
 }
 \examples{
 data_dir <- system.file("extdata", package = "ctsGE")

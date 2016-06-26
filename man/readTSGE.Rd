@@ -41,6 +41,11 @@ By default, the files are assumed to be tab-delimited and to contain column
    headings.
 The function forms the union of all transcripts and creates one big table
 with zeros where necessary.
+When reading the normalized expression values the function check whether
+there are rows that their median absolute deviation (MAD) value equal to zero
+and remove these rows. This step is important in order to continue to the
+next step of indexing the data.
+The function will output a message of how many genes were remove.
 }
 \examples{
 ## Read all .txt files from current working directory

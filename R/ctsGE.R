@@ -27,6 +27,11 @@
 #'    headings.
 #' The function forms the union of all transcripts and creates one big table
 #' with zeros where necessary.
+#' When reading the normalized expression values the function check whether
+#' there are rows that their median absolute deviation (MAD) value equal to zero
+#' and remove these rows. This step is important in order to continue to the
+#' next step of indexing the data.
+#' The function will output a message of how many genes were remove.
 #'
 #' @examples
 #' ## Read all .txt files from current working directory
@@ -115,23 +120,24 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,...){
 #' standarization table in \emph{object$scaled},
 #' and the indexes table in \emph{object$index}
 #'
-#' @details After the standardize step, there is an indexing step to convert
-#' each time point to \strong{0, 1, -1}:
+#' @details 1. First, the expression matrix is standardized. The function
+#' default standardizing method is a median-based scaling; alternatively, a
+#' mean-based scaling can be used. The new scaled values represent the distance
+#' of each gene at a certain time point from its center, median or mean,
+#' in median absolute deviation (MAD) units or standard deviation (SD) units,
+#' respectively.
 #'
-#'  The function defines limits around the center, median or mean, +/- cutoff
-#'  value in median absolute deviation(mad) or standard deviation(sd) units
-#'  respectively.
-#'  The signification level limit is determined by the user with the
-#'  \command{cutoff} option.
+#' 2. Next, the standardized values are converted to index values that indicate
+#' whether gene expression is above, below or within the limits around the
+#' center of the time series, i.e., **1 / -1 / 0**, respectively. The user
+#' defines a parameter cutoff that determines the limits around the
+#' gene-expression center. Then the function calculates the index value at each
+#' time point according to:
 #'
-#'  Then the function calculate a value to each time point according to:
 #' \enumerate{
-#'         \item \bold{0}  when gene expression at a specific time point is
-#'         within the center limits (+/- cutoff).
-#'         \item \bold{1}  when gene expression at a specific time point is
-#'         greater than center top limit (+ cutoff).
-#'         \item \bold{-1} when gene expression at a specific time point is
-#'         smaller than center bottom limit (- cutoff).}
+#'      \item \bold{0:}  standardized value is within the limits (+/- cutoff)
+#'      \item \bold{1:}  standardized value exceeds the upper limit (+ cutoff)
+#'      \item \bold{-1:} standardized value exceeds the lower limit (- cutoff)}
 #'
 #'
 #' @examples
@@ -169,19 +175,15 @@ PreparingTheIndexes = function(x,cutoff=1,mad.scale=TRUE){
 #' @param cutoff A numeric, dermine the threshold for indexing, Default = 1
 #' @return Gene expression index
 #' @details The function defines limits around the center (median or mean),
-#' +/- cutoff value in
-#'  median absolute deviation or standard deviation units respectively.
-#'  The signification level limits is determined
-#'  by the user with the \command{cutoff} option.
+#' +/- cutoff value in median absolute deviation (MAD) or standard deviation
+#' (SD) units respectively.The user defines a parameter cutoff that determines
+#' the limits around the gene-expression center. Then the function calculates
+#' the index value at each time point according to:
 #'
-#' Then the function calculate the new value for each time point:
 #' \enumerate{
-#'      \item \bold{0}  when gene expression at a specific time point is
-#'      within the center limits  (+/- cutoff).
-#'      \item \bold{1}  when gene expression at a specific time point was
-#'      greater than center top limit (+ cutoff).
-#'      \item \bold{-1} when gene expression at a specific time point was
-#'      smaller than center bottom limit (- cutoff.)}
+#'      \item \bold{0:}  standardized value is within the limits (+/- cutoff)
+#'      \item \bold{1:}  standardized value exceeds the upper limit (+ cutoff)
+#'      \item \bold{-1:} standardized value exceeds the lower limit (- cutoff)}
 #'
 #' @seealso \code{\link{PreparingTheIndexes}}
 #' @examples
@@ -203,7 +205,7 @@ index=function(x,cutoff=1){ return(unlist(lapply(x,function(x){
     return(y) })))}
 
 
-#' Clustering the indexes applying kmeans
+#' Clustering the indexes applying K-means
 #'
 #' Clustering each index, that was predifined by
 #' \code{\link{PreparingTheIndexes}}, with \code{\link{kmeans}}.
@@ -219,24 +221,25 @@ index=function(x,cutoff=1){ return(unlist(lapply(x,function(x){
 #' and the number of clusters for each index in \emph{object$optimalK}
 #'
 #'
-#' @details In order to choose a "good" k for K-means clustering,
-#' we apply the Elbow method:
-#' First of all, compute the sum of squared error (SSE) for different
-#' values of k (for example 1-10).
-#' The plot of k against the SSE shows that the error decreases as
-#' k gets larger;
-#' The idea of the elbow method is to choose the k at which the SSE
-#' decreases abruptly.
-#' In order to detect the right k where the SSE decreases abruptly,
-#' we compute ratio of the within cluster sum of squares(WSS=SSE) to the total
-#' sum of squares(TSS),and assuming that ratio of less than 0.2 indicate that
-#' from that point error doesn't decrease much and adding another cluster
-#' doesn't give much better modeling of the data.
+#' @details The clustering is done with K-means. To choose an optimal k for
+#'  K-means clustering, the Elbow method was applied, this method looks at the
+#'  percentage of variance explained as a function of the number of clusters: the
+#'  chosen number of clusters should be such that adding another cluster does
+#'  not give much better modeling of the data. First, the ratio of the
+#'  within-cluster sum of squares (WSS) to the total sum of squares (TSS) is
+#'  computed for different values of k (i.e., 1, 2, 3 ...). The WSS, also known
+#'  as sum of squared error (SSE), decreases as k gets larger. The Elbow method
+#'  chooses the k at which the SSE decreases abruptly. This happens when the
+#'  computed value of the WSS-to-TSS ratio first drops from 0.2.
 #'
-#' By default data is standardize before clustering,
-#' for clustering the raw counts set the \command{\strong{scaling}}
-#' parameter to
-#'  FALSE.
+#'  Running \code{\link{kmeans}} and calculating the optimal k for each one of
+#'  the indexes in the data could take a long time. To shorten the procedure the
+#'  user can skip this step altogether and directly view a specific index and
+#'  its clusters by running either the \code{\link{PlotIndexesClust}} or the
+#'  \code{\link{ctsGEShinyApp}} function.
+#'
+#'  By default data is standardize before clustering,for clustering
+#'  the raw counts set the \command{\strong{scaling}} parameter to FALSE.
 #'
 #'
 #' @examples
@@ -299,11 +302,11 @@ ClustIndexes = function(x,scaling=TRUE){
     structure(x,class = "ctsGEList")
 }
 
-#' A graphic visualization of an index
+#' Graphic visualization of an index
 #'
-#' Line graphs made with \code{\link{ggplot}} of a index and its clusters -
-#' the user choose the index to show,
-#' clustering is done with \code{\link{kmeans}}
+#' The function generates graphs and tables of a specific index and its
+#' clusters. The user decides whether to supply the k or let the function
+#' calculate the k for the selected index
 #'
 #' @param x ctsGEList object
 #' @param idx A character, the index to plot
@@ -311,10 +314,10 @@ ClustIndexes = function(x,scaling=TRUE){
 #' @param k A numeric, number of clusters. If not given the function will
 #' calculate what is the optimal k for the index.
 #' @param scaling A boolean, default to TRUE,
-#' does the data should be standardized before clustered with kmeans.
+#' does the data should be standardized before clustered with K-means.
 #'
 #' @return A list with two objects:
-#'  \enumerate{\item Table of the index and its clusters
+#'  \enumerate{\item Table of of a specific index and its clusters
 #'             \item Gene expression pattern graphs
 #'             for each one of the clusters}
 #'
@@ -424,6 +427,13 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
 #'
 #' @return Creates a shiny application and opens a shinyapp.io web page
 #'
+#' @details The `ctsGEShinyApp` function takes two arguments the ctsGE object
+#' and a cutoff,and opens an html page as a GUI. On the web page, the user
+#' chooses the profile to visualize and the number of clusters (k parameter for
+#'  K-means) to show. The line graph of the profile separated into the clusters
+#'  will show in the main panel, and a list of the genes and their expressions
+#'  will also be available. The tables and figures can be downloaded.
+#'
 #' @seealso shiny::ShinyApp
 #' @examples
 #'
@@ -484,7 +494,7 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                                                    min = 1,max= 10,
                                                    value= 1,step= 1),
                                 shiny::checkboxInput("scale",
-                                                     "Raw values",value = FALSE)
+                                                     "Unscaled values",value = FALSE)
             ),
             shiny::mainPanel(width = 10,
                              shiny::tabsetPanel(
@@ -509,7 +519,7 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                     PlotIndexesClust(prts,input$index,k = input$n)
                     }else{
                         PlotIndexesClust(prts,input$index,k = input$n,
-                                         scaling = F)}
+                                         scaling = FALSE)}
             })
 
             shiny::observe({
