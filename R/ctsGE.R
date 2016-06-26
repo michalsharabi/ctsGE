@@ -97,7 +97,7 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,...){
     if(sum(tmp==0)){
         x$tsTable <- x$tsTable[names(which(tmp!=0)),]
         x$tags <- names(which(tmp!=0))
-        print(paste0(sum(tmp==0)," Genes were remove out of data due to low expression"))
+        print(paste0(sum(tmp==0)," Genes were remove"))
     }
 
     structure(x,class = "ctsGEList")
