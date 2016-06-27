@@ -1,6 +1,6 @@
 Package: ctsGE
 Title: Clustering of Time Series Gene Expression data
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: c(person("Michal", "Sharabi-Schwager",
                 email = "michalsharabi@gmail.com", role = c("aut", "cre")),
                 person("Ron", "Ophir",
@@ -17,7 +17,6 @@ Imports:
     ggplot2,
     limma,
     reshape2,
-    shinyapps,
     shiny,
     stats,
     utils

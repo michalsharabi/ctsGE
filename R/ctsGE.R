@@ -490,7 +490,7 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                                 shiny::selectInput("index","Select an Index:",
                                                    choices = idx,
                                                    selected = idx[1]),
-                                shinyapps::hr(),
+                                shiny::hr(),
                                 shiny::sliderInput("n", "Number of clusters",
                                                    min = 1,max= 10,
                                                    value= 1,step= 1),
