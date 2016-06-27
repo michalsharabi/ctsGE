@@ -341,10 +341,7 @@ ctsGEShinyApp(rts,cutoff = 0.55)
 ```
 
 ###The graph tab
-![My Figure](/home/michal/MyPack/ctsGE/vignettes/pics/ctsGEShinyApp_tab1.png)
+![](https://drive.google.com/file/d/0B78E_5CCZr0dUFJ2WTVmUHI1UWs/view?usp=sharing_eid&ts=5770ca17)
 
 ### The table tab
-![My Figure](/home/michal/MyPack/ctsGE/vignettes/pics/ctsGEShinyApp_tab2.png)
-
-
-
+![](https://drive.google.com/file/d/0B78E_5CCZr0dNE5fMTFabEt2aXM/view?usp=sharing_eid&ts=5770ca0d)
