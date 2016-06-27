@@ -1,6 +1,7 @@
 ## ---- echo = FALSE, message = FALSE--------------------------------------
 library(ctsGE)
 library(pander)
+library(rmarkdown)
 
 ## ----eval=FALSE,warning=FALSE,message=FALSE------------------------------
 #  devtools::install_github("michalsharabi/ctsGE")

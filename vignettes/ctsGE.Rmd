@@ -40,6 +40,7 @@ output:
 ```{r, echo = FALSE, message = FALSE}
 library(ctsGE)
 library(pander)
+library(rmarkdown)
 ```
 
 # Installing ctsGE
@@ -340,8 +341,6 @@ The tables and figures can be downloaded.
 ctsGEShinyApp(rts,cutoff = 0.55)
 ```
 
-###The graph tab
-![](https://drive.google.com/file/d/0B78E_5CCZr0dUFJ2WTVmUHI1UWs/view?usp=sharing_eid&ts=5770ca17)
+###[The graph tab](http://vitisexonusage.byethost9.com/ctsGEShinyApp_tab1.png)
 
-### The table tab
-![](https://drive.google.com/file/d/0B78E_5CCZr0dNE5fMTFabEt2aXM/view?usp=sharing_eid&ts=5770ca0d)
+### [The table tab](http://vitisexonusage.byethost9.com/ctsGEShinyApp_tab2.png)
