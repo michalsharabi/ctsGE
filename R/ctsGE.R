@@ -447,8 +447,7 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
 #'
 #'
 #' @export
-#' @import stats
-#'
+#' @import  stats shiny
 #'
 ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
     prts <- PreparingTheIndexes(rts, cutoff, mad.scale)
@@ -537,25 +536,25 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                 rownames(tbl) <- NULL
                 output$table <- shiny::renderUI({
                     if (is.null(tbl)) {return()}
+
                     output$tmp <-
                         DT::renderDataTable(tbl,
                                             rownames = FALSE,
-                                            filter=list(
-                                                position = 'top',
-                                                clear = FALSE),
-                                            server = TRUE,
-                                            extensions =c('Buttons',
-                                                          'FixedHeader'),
-                                            options = list(
-                                                dom = 'TB<"clear">lfrtip',
-                                                lengthMenu =c(10,50,100,
-                                                              nrow(tbl)),
-                                                fixedHeader = TRUE,
-                                                buttons = c('copy',
-                                                            'csv',
-                                                            'excel',
-                                                            'print')
-                                            ))
+                                            extensions ='Buttons',
+                                            options = list(dom =
+                                                            'TB<"clear">lfrtip',
+                                                           buttons = c('copy',
+                                                                       'csv',
+                                                                       'excel',
+                                                                       'print'),
+                                                           lengthMenu =
+                                                            list(c(15,50,100,
+                                                                 nrow(tbl)),
+                                                                 c('15','50',
+                                                                   '100','All')
+                                                                 ))
+
+                        )
                     DT::dataTableOutput("tmp")
                 })#renderUI
             })#end observe

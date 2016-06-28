@@ -1,6 +1,6 @@
 Package: ctsGE
 Title: Clustering of Time Series Gene Expression data
-Version: 0.99.4
+Version: 0.99.5
 Authors@R: c(person("Michal", "Sharabi-Schwager",
                 email = "michalsharabi@gmail.com", role = c("aut", "cre")),
                 person("Ron", "Ophir",
@@ -11,9 +11,8 @@ Description: Methodology for supervised clustering of potentially many predictor
                 predefined
                 set of model profiles.
 Depends:
-    R (>= 3.2)
+    R (>= 3.3)
 Imports:
-    DT,
     ggplot2,
     limma,
     reshape2,
