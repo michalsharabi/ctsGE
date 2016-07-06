@@ -47,17 +47,8 @@ library(rmarkdown)
 
 
 ```{r,eval=FALSE,warning=FALSE,message=FALSE}
-devtools::install_github("michalsharabi/ctsGE")
+biocLite("ctsGE")
 ```
-
-**OR:**
-
-*Download [source](https://github.com/michalsharabi/ctsGE/tree/master/source)*
-```{r, eval=FALSE,warning=FALSE,message=FALSE }
-install.packages("ctsGE.tar.gz",repos=NULL,type="source")
-```
-
-
 
 # Workflow of clustering with ctsGE
 1. Build the `ctsGEList` Object from expression data    

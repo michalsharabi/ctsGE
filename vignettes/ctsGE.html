@@ -10,7 +10,7 @@
 
 <meta name="author" content="Michal Sharabi-Schwager" />
 
-<meta name="date" content="2016-06-27" />
+<meta name="date" content="2016-07-06" />
 
 <title>ctsGE Package</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">ctsGE Package</h1>
 <h4 class="author"><em>Michal Sharabi-Schwager</em></h4>
-<h4 class="date"><em>2016-06-27</em></h4>
+<h4 class="date"><em>2016-07-06</em></h4>
 <h4 class="abstract">Abstract</h4>
 <p>A prerequisite to clustering noisy data, such as gene-expression data, is the filtering step. ctsGE is an R package that performs clustering of time-series gene-expression data: as an alternative to the filtering step, it applies a sorting step in which all of the data are divided into small groups according to how the time points are related to the time-series median. Then, clustering is performed separately on each group, using a “structure-based” dissimilarity concept(e.g., Lin and Li<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>; Corduas<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>). Thus, the clustering is done in two steps. First an expression index (i.e., a sequence of 1,-1, and 0) is defined that divides genes into groups according to their expression profiles, and then genes with the same index are clustered by applying <strong>K-means</strong>. The <strong>ctsGE</strong> package also provides an interactive tool to visualize and explore the gene-expression patterns and their subclusters.</p>
 </div>
@@ -84,10 +84,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <div id="installing-ctsge" class="section level1">
 <h1><span class="header-section-number">1</span> Installing ctsGE</h1>
-<pre class="r"><code>devtools::install_github(&quot;michalsharabi/ctsGE&quot;)</code></pre>
-<p><strong>OR:</strong></p>
-<p><em>Download <a href="https://github.com/michalsharabi/ctsGE/tree/master/source">source</a></em></p>
-<pre class="r"><code>install.packages(&quot;ctsGE.tar.gz&quot;,repos=NULL,type=&quot;source&quot;)</code></pre>
+<pre class="r"><code>biocLite(&quot;ctsGE&quot;)</code></pre>
 </div>
 <div id="workflow-of-clustering-with-ctsge" class="section level1">
 <h1><span class="header-section-number">2</span> Workflow of clustering with ctsGE</h1>

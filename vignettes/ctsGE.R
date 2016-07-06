@@ -4,10 +4,7 @@ library(pander)
 library(rmarkdown)
 
 ## ----eval=FALSE,warning=FALSE,message=FALSE------------------------------
-#  devtools::install_github("michalsharabi/ctsGE")
-
-## ---- eval=FALSE,warning=FALSE,message=FALSE-----------------------------
-#  install.packages("ctsGE.tar.gz",repos=NULL,type="source")
+#  biocLite("ctsGE")
 
 ## ----eval=FALSE,message=FALSE, warning=FALSE-----------------------------
 #  library(GEOquery)

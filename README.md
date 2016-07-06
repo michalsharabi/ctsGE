@@ -4,6 +4,11 @@ Clustering of time series gene expression data
 
 
 ```{r,eval=FALSE,warning=FALSE,message=FALSE}
+biocLite("ctsGE")
+```
+**OR**
+
+```{r,eval=FALSE,warning=FALSE,message=FALSE}
 devtools::install_github("michalsharabi/ctsGE")
 ```
 
