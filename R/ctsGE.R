@@ -100,6 +100,6 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,...){
         print(paste0(sum(tmp==0)," Genes were remove"))
     }
 
-    structure(x,class = "ctsGEList")
+    structure(x,class = "list")
 }
 

@@ -5,7 +5,8 @@
 #' clusters. The user decides whether to supply the k or let the function
 #' calculate the k for the selected index
 #'
-#' @param x ctsGEList object
+#' @param x list of expression data and their indexes after running
+#' \code{\link{PreparingTheIndexes}}
 #' @param idx A character, the index to plot
 #' (e.g., for 8 time points "11100-1-1-1")
 #' @param k A numeric, number of clusters. If not given the function will

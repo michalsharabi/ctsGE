@@ -5,7 +5,7 @@
 #'  data.
 #' For more information about shiny apps \cite{http://shiny.rstudio.com/}
 #'
-#' @param rts ctsGEList object
+#' @param rts list of an expression data that made by readTSGE
 #' @param cutoff A numeric that define the degree of change in gene espression
 #'  rate.  see \code{\link{PreparingTheIndexes}}
 #' @param mad.scale A boolean defaulting to TRUE as to what method of scaling

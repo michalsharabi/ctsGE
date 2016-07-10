@@ -3,7 +3,8 @@
 #' Clustering each index, that was predifined by
 #' \code{\link{PreparingTheIndexes}}, with \code{\link{kmeans}}.
 #'
-#' @param x  A ctsGEList object
+#' @param x  list of expression data and their indexes after running
+#' \code{\link{PreparingTheIndexes}}
 #' @param scaling Boolean parameter, does the data should be standardized
 #' before clustered. Default = TRUE
 #'
@@ -92,5 +93,5 @@ ClustIndexes = function(x,scaling=TRUE){
     colnames(x$optimalK) <- c("tags","k")
     x$ClusteredIdxTable <- do.call("rbind",clust_tbl)
 
-    structure(x,class = "ctsGEList")
+    structure(x,class = "list")
 }

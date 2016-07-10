@@ -7,7 +7,8 @@
 ClustIndexes(x, scaling = TRUE)
 }
 \arguments{
-\item{x}{A ctsGEList object}
+\item{x}{list of expression data and their indexes after running
+\code{\link{PreparingTheIndexes}}}
 
 \item{scaling}{Boolean parameter, does the data should be standardized
 before clustered. Default = TRUE}

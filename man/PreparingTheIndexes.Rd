@@ -7,7 +7,7 @@
 PreparingTheIndexes(x, cutoff = 1, mad.scale = TRUE)
 }
 \arguments{
-\item{x}{A ctsGEList object}
+\item{x}{list of an expression data that made by readTSGE}
 
 \item{cutoff}{A numeric that define the degree of change in gene
 espression rate.

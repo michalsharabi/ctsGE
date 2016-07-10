@@ -7,7 +7,8 @@
 PlotIndexesClust(x, idx, k = NULL, scaling = TRUE)
 }
 \arguments{
-\item{x}{ctsGEList object}
+\item{x}{list of expression data and their indexes after running
+\code{\link{PreparingTheIndexes}}}
 
 \item{idx}{A character, the index to plot
 (e.g., for 8 time points "11100-1-1-1")}

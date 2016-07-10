@@ -4,7 +4,7 @@
 #' gene.
 #'
 #'
-#' @param x A ctsGEList object
+#' @param x list of an expression data that made by readTSGE
 #' @param cutoff A numeric that define the degree of change in gene
 #' espression rate.
 #'  \emph{See Details}.
@@ -48,7 +48,10 @@
 #' @import stats
 #'
 PreparingTheIndexes = function(x,cutoff=1,mad.scale=TRUE){
-    if(class(x)!="ctsGEList") stop ( "data must be a ctsGEList object")
+    if(!is.list(x)) stop ( "data must be a list")
+    if(sum(names(x)==c("tsTable","samples","tags","timePoints")) < 4)
+        stop ( "Your List miss one or more of theses objects:
+               tsTable, samples, tags, timePoints")
     tp <- x$timePoints
     x$scaled <-
         tmp <-
@@ -59,7 +62,7 @@ PreparingTheIndexes = function(x,cutoff=1,mad.scale=TRUE){
     colnames(idx) <- x$samples
     x$index <- cbind(as.data.frame(idx),index=apply(idx,1,paste,collapse=""))
     x$cutoff <- cutoff
-    structure(x,class = "ctsGEList")
+    structure(x,class = "list")
 }
 
 #' Indexing function

@@ -7,7 +7,7 @@
 ctsGEShinyApp(rts, cutoff = 1, mad.scale = TRUE, title = NULL)
 }
 \arguments{
-\item{rts}{ctsGEList object}
+\item{rts}{list of an expression data that made by readTSGE}
 
 \item{cutoff}{A numeric that define the degree of change in gene espression
 rate.  see \code{\link{PreparingTheIndexes}}}
