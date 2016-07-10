@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
-<meta name="author" content="Michal Sharabi-Schwager" />
+<meta name="author" content="Michal Sharabi-Schwager, Ron Ophir" />
 
-<meta name="date" content="2016-07-06" />
+<meta name="date" content="2016-07-10" />
 
 <title>ctsGE Package</title>
 
@@ -50,8 +50,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 <div id="header">
 <h1 class="title">ctsGE Package</h1>
-<h4 class="author"><em>Michal Sharabi-Schwager</em></h4>
-<h4 class="date"><em>2016-07-06</em></h4>
+<h4 class="author"><em>Michal Sharabi-Schwager, Ron Ophir</em></h4>
+<h4 class="date"><em>2016-07-10</em></h4>
 <h4 class="abstract">Abstract</h4>
 <p>A prerequisite to clustering noisy data, such as gene-expression data, is the filtering step. ctsGE is an R package that performs clustering of time-series gene-expression data: as an alternative to the filtering step, it applies a sorting step in which all of the data are divided into small groups according to how the time points are related to the time-series median. Then, clustering is performed separately on each group, using a “structure-based” dissimilarity concept(e.g., Lin and Li<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>; Corduas<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>). Thus, the clustering is done in two steps. First an expression index (i.e., a sequence of 1,-1, and 0) is defined that divides genes into groups according to their expression profiles, and then genes with the same index are clustered by applying <strong>K-means</strong>. The <strong>ctsGE</strong> package also provides an interactive tool to visualize and explore the gene-expression patterns and their subclusters.</p>
 </div>
@@ -104,10 +104,14 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>Load the files and make a list of the <code>matrix</code>:</p>
 <p>When reading the normalized expression values the function check whether there are rows that their median absolute deviation (MAD) value equal to zero and remove these rows. This step is important in order to continue to the next step of indexing the data.</p>
 <pre class="r"><code>library(GEOquery)
-gse2077 &lt;- getGEO('GSE2077', GSElimits = c(1,6), GSEMatrix = FALSE)
-# list of the time series tables
-gseList &lt;- lapply(GSMList(gse2077),function(x){Table(x)}) 
-names(gseList)</code></pre>
+
+gse2077 &lt;- getGEO('GSE2077')
+gseAssays &lt;- Biobase::assayData(gse2077)
+gseExprs &lt;- Biobase::assayDataElement(gseAssays[[1]][,c(1:6)],'exprs')
+
+# list of the time series tables use only 6 samples
+gseList &lt;- lapply(1:6,function(x){data.frame(Genes = rownames(gseExprs),Value = gseExprs[,x])}) 
+names(gseList) &lt;- colnames(gseExprs)</code></pre>
 <p>Build the ctsGEList Object from the list of matrices:</p>
 <pre class="r"><code>rts &lt;- readTSGE(gseList,labels = c(&quot;0h&quot;,&quot;6h&quot;,&quot;12h&quot;,&quot;24h&quot;,&quot;48h&quot;,&quot;72h&quot;)) </code></pre>
 </div>

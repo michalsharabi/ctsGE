@@ -8,10 +8,14 @@ library(rmarkdown)
 
 ## ----eval=FALSE,message=FALSE, warning=FALSE-----------------------------
 #  library(GEOquery)
-#  gse2077 <- getGEO('GSE2077', GSElimits = c(1,6), GSEMatrix = FALSE)
-#  # list of the time series tables
-#  gseList <- lapply(GSMList(gse2077),function(x){Table(x)})
-#  names(gseList)
+#  
+#  gse2077 <- getGEO('GSE2077')
+#  gseAssays <- Biobase::assayData(gse2077)
+#  gseExprs <- Biobase::assayDataElement(gseAssays[[1]][,c(1:6)],'exprs')
+#  
+#  # list of the time series tables use only 6 samples
+#  gseList <- lapply(1:6,function(x){data.frame(Genes = rownames(gseExprs),Value = gseExprs[,x])})
+#  names(gseList) <- colnames(gseExprs)
 
 ## ----eval=FALSE,message=FALSE,warning=FALSE------------------------------
 #  rts <- readTSGE(gseList,labels = c("0h","6h","12h","24h","48h","72h"))
