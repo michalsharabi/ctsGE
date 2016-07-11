@@ -18,7 +18,7 @@ scaling to use.
 Default median-base scaling. FALSE, mean-base scaling.}
 }
 \value{
-ctsGEList object is returned as output with the relative
+list object is returned as output with the relative
 standarization table in \emph{object$scaled},
 and the indexes table in \emph{object$index}
 }

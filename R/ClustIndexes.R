@@ -9,7 +9,7 @@
 #' before clustered. Default = TRUE
 #'
 #'
-#' @return  ctsGEList object is returned as output,
+#' @return  list object is returned as output,
 #' with the relative culstered indexes table in
 #'  \emph{object$ClusteredIdxTable},
 #' and the number of clusters for each index in \emph{object$optimalK}
@@ -92,6 +92,5 @@ ClustIndexes = function(x,scaling=TRUE){
     x$optimalK <-  do.call("rbind",kindex)
     colnames(x$optimalK) <- c("tags","k")
     x$ClusteredIdxTable <- do.call("rbind",clust_tbl)
-
-    structure(x,class = "list")
+    return(x)
 }

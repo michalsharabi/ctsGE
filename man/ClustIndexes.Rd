@@ -14,7 +14,7 @@ ClustIndexes(x, scaling = TRUE)
 before clustered. Default = TRUE}
 }
 \value{
-ctsGEList object is returned as output,
+list object is returned as output,
 with the relative culstered indexes table in
  \emph{object$ClusteredIdxTable},
 and the number of clusters for each index in \emph{object$optimalK}

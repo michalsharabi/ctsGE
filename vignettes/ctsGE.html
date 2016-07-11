@@ -10,7 +10,7 @@
 
 <meta name="author" content="Michal Sharabi-Schwager, Ron Ophir" />
 
-<meta name="date" content="2016-07-10" />
+<meta name="date" content="2016-07-11" />
 
 <title>ctsGE Package</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">ctsGE Package</h1>
 <h4 class="author"><em>Michal Sharabi-Schwager, Ron Ophir</em></h4>
-<h4 class="date"><em>2016-07-10</em></h4>
+<h4 class="date"><em>2016-07-11</em></h4>
 <h4 class="abstract">Abstract</h4>
 <p>A prerequisite to clustering noisy data, such as gene-expression data, is the filtering step. ctsGE is an R package that performs clustering of time-series gene-expression data: as an alternative to the filtering step, it applies a sorting step in which all of the data are divided into small groups according to how the time points are related to the time-series median. Then, clustering is performed separately on each group, using a “structure-based” dissimilarity concept(e.g., Lin and Li<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>; Corduas<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>). Thus, the clustering is done in two steps. First an expression index (i.e., a sequence of 1,-1, and 0) is defined that divides genes into groups according to their expression profiles, and then genes with the same index are clustered by applying <strong>K-means</strong>. The <strong>ctsGE</strong> package also provides an interactive tool to visualize and explore the gene-expression patterns and their subclusters.</p>
 </div>
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <ul>
 <li><a href="#installing-ctsge"><span class="toc-section-number">1</span> Installing ctsGE</a></li>
 <li><a href="#workflow-of-clustering-with-ctsge"><span class="toc-section-number">2</span> Workflow of clustering with ctsGE</a></li>
-<li><a href="#building-the-ctsgelist-object"><span class="toc-section-number">3</span> Building the ctsGEList Object</a><ul>
+<li><a href="#building-the-expression-matrix"><span class="toc-section-number">3</span> Building the expression matrix</a><ul>
 <li><a href="#loading-data-from-ncbi-geo"><span class="toc-section-number">3.1</span> Loading data from ncbi GEO</a></li>
 <li><a href="#loading-data-from-files"><span class="toc-section-number">3.2</span> Loading data from files</a></li>
 </ul></li>
@@ -89,15 +89,15 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="workflow-of-clustering-with-ctsge" class="section level1">
 <h1><span class="header-section-number">2</span> Workflow of clustering with ctsGE</h1>
 <ol style="list-style-type: decimal">
-<li><p>Build the <code>ctsGEList</code> Object from expression data</p></li>
+<li><p>Build the expression matrix from expression data</p></li>
 <li><p>Define an expression index (i.e., a sequence of 1,-1, and 0) for each gene</p></li>
 <li><p>Cluster the gene set with the same index, applying <strong>K-means</strong>: <span class="math display">\[kmeans(genesInIndex,k)\]</span></p></li>
 <li><p>Graphic visualization of expression patterns</p></li>
 <li><p>Interactive visualization and exploration of gene-expression data</p></li>
 </ol>
 </div>
-<div id="building-the-ctsgelist-object" class="section level1">
-<h1><span class="header-section-number">3</span> Building the ctsGEList Object</h1>
+<div id="building-the-expression-matrix" class="section level1">
+<h1><span class="header-section-number">3</span> Building the expression matrix</h1>
 <p>As input, the <strong>ctsGE</strong> package expects a normalized expression table, where rows are genes and columns are samples. This can consist of count data as obtained, e. g., from RNA-Seq or other high-throughput sequencing experiment or microarray experiment. Example data from the [Gene Expression Omnibus (GEO)] (<a href="http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE2077" class="uri">http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE2077</a>) are used here illustrate ctsGE’s potential. The data are the expression profile of <em>Cryptosporidium parvum</em>-infected human ileocecal adenocarcinoma cells (HCT-8),<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>) comprised of 12,625 genes over 18 samples (three replicates of six developmental stages in human cancer). For tutorial purposes and for simplification, only one replicate out of three is used, for six overall time points.</p>
 <div id="loading-data-from-ncbi-geo" class="section level2">
 <h2><span class="header-section-number">3.1</span> Loading data from ncbi GEO</h2>
@@ -112,7 +112,7 @@ gseExprs &lt;- Biobase::assayDataElement(gseAssays[[1]][,c(1:6)],'exprs')
 # list of the time series tables use only 6 samples
 gseList &lt;- lapply(1:6,function(x){data.frame(Genes = rownames(gseExprs),Value = gseExprs[,x])}) 
 names(gseList) &lt;- colnames(gseExprs)</code></pre>
-<p>Build the ctsGEList Object from the list of matrices:</p>
+<p>Build the expression matrix from the list of matrices:</p>
 <pre class="r"><code>rts &lt;- readTSGE(gseList,labels = c(&quot;0h&quot;,&quot;6h&quot;,&quot;12h&quot;,&quot;24h&quot;,&quot;48h&quot;,&quot;72h&quot;)) </code></pre>
 </div>
 <div id="loading-data-from-files" class="section level2">

@@ -51,7 +51,7 @@ biocLite("ctsGE")
 ```
 
 # Workflow of clustering with ctsGE
-1. Build the `ctsGEList` Object from expression data    
+1. Build the expression matrix from expression data    
 
 2. Define an expression index (i.e., a sequence of 1,-1, and 0) for each gene  
 
@@ -62,7 +62,7 @@ $$kmeans(genesInIndex,k)$$
 
 5. Interactive visualization and exploration of gene-expression data
 
-# Building the ctsGEList Object 
+# Building the expression matrix  
 As input, the **ctsGE** package expects a normalized expression table, where 
 rows are genes and columns are samples. This can consist of count data as 
 obtained, e. g., from RNA-Seq or other high-throughput sequencing experiment or
@@ -97,7 +97,7 @@ gseList <- lapply(1:6,function(x){data.frame(Genes = rownames(gseExprs),Value = 
 names(gseList) <- colnames(gseExprs)
 ```
 
-Build the ctsGEList Object from the list of matrices:
+Build the expression matrix from the list of matrices:
 ```{r,eval=FALSE,message=FALSE,warning=FALSE }
 rts <- readTSGE(gseList,labels = c("0h","6h","12h","24h","48h","72h")) 
 ```

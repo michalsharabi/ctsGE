@@ -23,7 +23,11 @@ Defaults to the file names.}
 \item{...}{other are passed to read.delim}
 }
 \value{
-ctsGEList
+A list with four objects:
+ \enumerate{\item expression matrix
+            \item samples names
+            \item tags - genes name
+            \item timePoints - number of time points}
 }
 \description{
 Reads and merges a set of text files containing normalized gene expression

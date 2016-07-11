@@ -11,7 +11,7 @@
 #' @param mad.scale A boolean defaulting to TRUE as to what method of
 #' scaling to use.
 #' Default median-base scaling. FALSE, mean-base scaling.
-#' @return ctsGEList object is returned as output with the relative
+#' @return list object is returned as output with the relative
 #' standarization table in \emph{object$scaled},
 #' and the indexes table in \emph{object$index}
 #'
@@ -62,7 +62,7 @@ PreparingTheIndexes = function(x,cutoff=1,mad.scale=TRUE){
     colnames(idx) <- x$samples
     x$index <- cbind(as.data.frame(idx),index=apply(idx,1,paste,collapse=""))
     x$cutoff <- cutoff
-    structure(x,class = "list")
+    return(x)
 }
 
 #' Indexing function

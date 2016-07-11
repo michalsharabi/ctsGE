@@ -14,7 +14,11 @@
 #' Defaults to the file names.
 #' @param ... other are passed to read.delim
 #'
-#' @return ctsGEList
+#' @return A list with four objects:
+#'  \enumerate{\item expression matrix
+#'             \item samples names
+#'             \item tags - genes name
+#'             \item timePoints - number of time points}
 #'
 #' @details As input, the ctsGE package expects normalized expression table,
 #' where rows are genes and columns are samples
