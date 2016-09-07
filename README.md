@@ -19,8 +19,4 @@ devtools::install_github("michalsharabi/ctsGE")
 install.packages("ctsGE.tar.gz",repos=NULL,type="source")
 ```
 ## ctsGE usage
-<<<<<<< HEAD
-Tutotial and examples can be found  [here](http://htmlpreview.github.io/?https://github.com/michalsharabi/ctsGE/blob/master/vignettes/ctsGE.html)
-=======
 Tutotial and examples can be found  [here](https://htmlpreview.github.io/?https://github.com/michalsharabi/ctsGE/blob/master/inst/doc/ctsGE.html)
->>>>>>> master
