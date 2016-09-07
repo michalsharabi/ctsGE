@@ -1,20 +1,5 @@
 Package: ctsGE
 Title: Clustering of Time Series Gene Expression data
-<<<<<<< HEAD
-Version: 0.99.11
-Authors@R: c(person("Michal", "Sharabi-Schwager", email =
-        "michalsharabi@gmail.com", role = c("aut", "cre")),
-        person("Ron", "Ophir", email = "ron@volcani.agri.gov.il", role
-        = "aut"))
-Description: Methodology for supervised clustering of potentially many
-        predictor variables, such as genes etc., in time series
-        datasets Provides functions that help the user assigning genes
-        to predefined set of model profiles.
-Depends: R (>= 3.3)
-Imports: ggplot2, limma, reshape2, shiny, stats, utils
-Suggests: BiocStyle, dplyr, DT, GEOquery, knitr, pander, rmarkdown,
-        testthat
-=======
 Version: 0.99.12
 Authors@R: c(person("Michal", "Sharabi-Schwager",
                 email = "michalsharabi@gmail.com", role = c("aut", "cre")),
@@ -44,16 +29,11 @@ Suggests:   BiocStyle,
             testthat
 URL: https://github.com/michalsharabi/ctsGE
 BugReports: https://github.com/michalsharabi/ctsGE/issues
->>>>>>> master
 License: GPL-2
 LazyData: true
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
 biocViews: GeneExpression, Transcription, DifferentialExpression,
-<<<<<<< HEAD
         GeneSetEnrichment, Genetics, Bayesian, Clustering, TimeCourse,
         Sequencing, RNASeq
-=======
-            GeneSetEnrichment, Genetics, Bayesian, Clustering,
-            TimeCourse, Sequencing, RNASeq
->>>>>>> master
+
