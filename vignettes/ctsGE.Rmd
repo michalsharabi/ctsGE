@@ -133,6 +133,10 @@ pander(head(rts$tsTable))
 
 ```
 
+### Adding genes annotation to time series table
+Please use the `desc` option in the function: `readTSGE` in order to add genes 
+description to the time series table.
+
 # Defining the expression index  
 1. First, the expression matrix is standardized. The function default 
 standardizing method is a median-based scaling; alternatively, a mean-based 

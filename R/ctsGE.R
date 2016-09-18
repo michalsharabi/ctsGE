@@ -11,6 +11,8 @@
 #' names and counts, respectively
 #' @param labels character vector giving short names to associate with the
 #' libraries.
+#' @param desc character vector with genes description (annotation),default to
+#' NULL
 #' Defaults to the file names.
 #' @param ... other are passed to read.delim
 #'
@@ -49,7 +51,8 @@
 #' @import limma stats utils
 #'
 #'
-readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,...){
+readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,desc = NULL,
+                    ...){
     x <- list()
     if(!is.list(files)){
         d <- taglist <- list()
@@ -101,8 +104,18 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,...){
     if(sum(tmp==0)){
         x$tsTable <- x$tsTable[names(which(tmp!=0)),]
         x$tags <- names(which(tmp!=0))
-        print(paste0(sum(tmp==0)," Genes were remove"))
+        print(paste0(sum(tmp==0)," Genes were remove"))}
+
+    if(!is.null(desc)){
+        x$desc <- desc
+        if(sum(tmp==0)){
+            desc <- desc[which(tmp!=0)]
+            x$desc <- as.data.frame(desc)
+            rownames(x$desc) <- x$tags
+            colnames(x$desc) <- "desc"}
     }
+
+
 
     structure(x,class = "list")
 }

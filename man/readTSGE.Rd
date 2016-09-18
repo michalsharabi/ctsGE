@@ -4,7 +4,8 @@
 \alias{readTSGE}
 \title{Read and merge a set of files containing gene expression data}
 \usage{
-readTSGE(files, path = NULL, columns = c(1, 2), labels = NULL, ...)
+readTSGE(files, path = NULL, columns = c(1, 2), labels = NULL,
+  desc = NULL, ...)
 }
 \arguments{
 \item{files}{character vector of filenames,
@@ -17,7 +18,10 @@ The default is the current working directory.}
 names and counts, respectively}
 
 \item{labels}{character vector giving short names to associate with the
-libraries.
+libraries.}
+
+\item{desc}{character vector with genes description (annotation),default to
+NULL
 Defaults to the file names.}
 
 \item{...}{other are passed to read.delim}

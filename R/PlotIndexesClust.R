@@ -44,6 +44,7 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
     clust_tbl <-  list()
     kindex <-  list()
     genes <- rownames(x$index[x$index[,"index"]==idx,])
+
     if(length(x) < 7){stop("Please run PreparingTheIndexes first")}
     if(!scaling){tbl <- x$tsTable[genes,]
     } else{tbl <- x$scaled[genes,]}
@@ -104,7 +105,7 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
         name <- paste0("Clust_",i,"_",idx)
         ggplot_list[[name]] <- gplot
     }
-
+    if ("desc" %in% names(x)) {tbl <- cbind(desc=x$desc[genes,], tbl)}
     plot[[name]] <- tbl
     plot$graphs <- ggplot_list
     structure(plot,class = "list")
