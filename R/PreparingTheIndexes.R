@@ -49,7 +49,7 @@
 #'
 PreparingTheIndexes = function(x,cutoff=1,mad.scale=TRUE){
     if(!is.list(x)) stop ( "data must be a list")
-    if(sum(names(x)==c("tsTable","samples","tags","timePoints")) < 4)
+    if(sum(names(x)==c("tsTable","samples","tags","timePoints","desc")) < 4)
         stop ( "Your List miss one or more of theses objects:
                tsTable, samples, tags, timePoints")
     tp <- x$timePoints

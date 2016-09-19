@@ -109,11 +109,11 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,desc = NULL,
     if(!is.null(desc)){
         x$desc <- desc
         if(sum(tmp==0)){
-            desc <- desc[which(tmp!=0)]
-            x$desc <- as.data.frame(desc)
-            rownames(x$desc) <- x$tags
-            colnames(x$desc) <- "desc"}
-    }
+            desc <- desc[which(tmp!=0)]}
+        x$desc <- as.data.frame(desc)
+        rownames(x$desc) <- x$tags
+        colnames(x$desc) <- "desc"}
+
 
 
 

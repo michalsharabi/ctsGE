@@ -117,6 +117,7 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                 })
                 tbl <- filtered()[[1]]
                 tbl <- cbind(genes=rownames(tbl),
+                             desc=as.factor(tbl$desc),
                              clusters=as.factor(tbl$clusters),
                              data.frame(tbl[,prts$samples]),
                              index=input$index)

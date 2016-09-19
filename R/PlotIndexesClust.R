@@ -60,7 +60,8 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
         tbl[names(fit_km$cluster),"clusters"] <- fit_km$cluster
         K <- k
     }else{
-        if(length(x) > 7){
+        # checks if indexes were already made with PreparingTheIndexes
+        if("optimalK" %in% names(x)){
             k <- x$optimalK[rownames(x$optimalK)==idx,"k"]
             tbl1 <- x$ClusteredIdxTable
             tags <- rownames(tbl1[tbl1[,"index"]==idx,])
