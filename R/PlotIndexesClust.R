@@ -81,7 +81,7 @@ PlotIndexesClust = function(x,idx,k=NULL,scaling=TRUE){
                 K <-  k #where: WSS / TSS < 0.2 this is the optimal k
                 clust <-   fit_km$cluster
             }else{
-                K <- 1
+                K <-  1
                 clust <- rep(1,nrow(tbl))}
             kindex[[idx]] <-  c(nrow(tbl),K)
             clust_tbl[[idx]] <- data.frame(clusters=clust,index=idx)
