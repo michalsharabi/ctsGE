@@ -107,7 +107,7 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,desc = NULL,
         print(paste0(sum(tmp==0)," Genes were remove"))}
 
     if(!is.null(desc)){
-        x$desc <- desc
+        x$desc <-  desc
         if(sum(tmp==0)){
             desc <- desc[which(tmp!=0)]}
         x$desc <- as.data.frame(desc)
