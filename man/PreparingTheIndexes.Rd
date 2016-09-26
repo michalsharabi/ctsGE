@@ -4,14 +4,13 @@
 \alias{PreparingTheIndexes}
 \title{Define an expression index for each gene}
 \usage{
-PreparingTheIndexes(x, cutoff = 1, mad.scale = TRUE)
+PreparingTheIndexes(x, cutoff_check = 0.7, mad.scale = TRUE)
 }
 \arguments{
 \item{x}{list of an expression data that made by readTSGE}
 
-\item{cutoff}{A numeric that define the degree of change in gene
-espression rate.
- \emph{See Details}.}
+\item{cutoff_check}{A numeric to calculate the optimal cutoff for the data
+must be bigger than 0.5, default to 0.7  \emph{See Details}.}
 
 \item{mad.scale}{A boolean defaulting to TRUE as to what method of
 scaling to use.
@@ -34,11 +33,19 @@ of each gene at a certain time point from its center, median or mean,
 in median absolute deviation (MAD) units or standard deviation (SD) units,
 respectively.
 
-2. Next, the standardized values are converted to index values that indicate
+2. The function compute the cutoff value following the idea that the
+clustering will be performed on small gene groups, an optimal cutoff value
+will be one that will minimize the number of genes in each group,
+i.e., generate index groups of equal size. The chi-squared values will be
+generate for each cutoff value (from 0.5 to `cutoff_check` parameter
+in increments of 0.05) the cutoff that generate the lowest chi-squared is
+chosen.
+
+3. Next, the standardized values are converted to index values that indicate
 whether gene expression is above, below or within the limits around the
-center of the time series, i.e., **1 / -1 / 0**, respectively. The user
-defines a parameter cutoff that determines the limits around the
-gene-expression center. Then the function calculates the index value at each
+center of the time series, i.e., **1 / -1 / 0**, respectively. The cutoff
+parameter determines the limits around the gene-expression center.
+Then the function calculates the index value at each
 time point according to:
 
 \enumerate{
@@ -52,6 +59,7 @@ files <- dir(path=data_dir,pattern = "\\\\.xls$")
 rts <- readTSGE(files, path = data_dir,
 labels = c("0h","6h","12h","24h","48h","72h"), skip = 10625 )
 prts <- PreparingTheIndexes(rts)
+prts$cutoff # the optimal cutoff
 
 }
 \seealso{

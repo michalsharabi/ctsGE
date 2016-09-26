@@ -5,9 +5,8 @@
 #'
 #'
 #' @param x list of an expression data that made by readTSGE
-#' @param cutoff A numeric that define the degree of change in gene
-#' espression rate.
-#'  \emph{See Details}.
+#' @param cutoff_check A numeric to calculate the optimal cutoff for the data
+#' must be bigger than 0.5, default to 0.7  \emph{See Details}.
 #' @param mad.scale A boolean defaulting to TRUE as to what method of
 #' scaling to use.
 #' Default median-base scaling. FALSE, mean-base scaling.
@@ -22,11 +21,19 @@
 #' in median absolute deviation (MAD) units or standard deviation (SD) units,
 #' respectively.
 #'
-#' 2. Next, the standardized values are converted to index values that indicate
+#' 2. The function compute the cutoff value following the idea that the
+#' clustering will be performed on small gene groups, an optimal cutoff value
+#' will be one that will minimize the number of genes in each group,
+#' i.e., generate index groups of equal size. The chi-squared values will be
+#' generate for each cutoff value (from 0.5 to `cutoff_check` parameter
+#' in increments of 0.05) the cutoff that generate the lowest chi-squared is
+#' chosen.
+#'
+#' 3. Next, the standardized values are converted to index values that indicate
 #' whether gene expression is above, below or within the limits around the
-#' center of the time series, i.e., **1 / -1 / 0**, respectively. The user
-#' defines a parameter cutoff that determines the limits around the
-#' gene-expression center. Then the function calculates the index value at each
+#' center of the time series, i.e., **1 / -1 / 0**, respectively. The cutoff
+#' parameter determines the limits around the gene-expression center.
+#' Then the function calculates the index value at each
 #' time point according to:
 #'
 #' \enumerate{
@@ -35,42 +42,64 @@
 #'      \item \bold{-1:} standardized value exceeds the lower limit (- cutoff)}
 #'
 #'
+#'
 #' @examples
 #' data_dir <- system.file("extdata", package = "ctsGE")
 #' files <- dir(path=data_dir,pattern = "\\.xls$")
 #' rts <- readTSGE(files, path = data_dir,
 #' labels = c("0h","6h","12h","24h","48h","72h"), skip = 10625 )
 #' prts <- PreparingTheIndexes(rts)
+#' prts$cutoff # the optimal cutoff
 #'
 #'@seealso \code{\link{scale}} \code{\link{index}}
 #'
 #' @export
-#' @import stats
+#' @import stats ccaPP
 #'
-PreparingTheIndexes = function(x,cutoff=1,mad.scale=TRUE){
+PreparingTheIndexes = function(x,cutoff_check = 0.7,mad.scale=TRUE){
+    # function to test cutoff values
+    TstCutoff <- function(x,cutoff_check = 0.7){
+        c <- seq(0.5,cutoff_check,0.05)
+        idx_tbl <- lapply(c,function(i){apply(x,1,index,cutoff=i)})
+        idx_str <- lapply(idx_tbl,
+                          function(y){apply(t(y),1,stringr::str_c,collapse="")})
+
+        chisq_val <- lapply(idx_str,
+                            function(z){chisq.test(table(z))$statistic[[1]]})
+        i = which(unlist(chisq_val)==min(unlist(chisq_val)))
+        return(list(cutoff=c[i],idx_tbl=t(idx_tbl[[i]]),idx_str = idx_str[[i]]))}
+
     if(!is.list(x)) stop ( "data must be a list")
-    if(sum(names(x)==c("tsTable","samples","tags","timePoints","desc" )) < 4)
+    if(sum(names(x)%in%c("tsTable","samples","tags","timePoints","desc" )) < 4)
         stop ( "Your List miss one or more of theses objects:
                tsTable, samples, tags, timePoints")
     tp <- x$timePoints
+    # compute the MAD faster and return median and MAD for each row
+    fastMad <- apply(t(x$tsTable),2,ccaPP::fastMAD)
+    mad_val <- grep("MAD",names(unlist(fastMad)))
+    med_val <- grep("center",names(unlist(fastMad)))
+
     x$scaled <-
         tmp <-
-        t(scale(t(x$tsTable),apply(t(x$tsTable),2,median),
-                apply(t(x$tsTable),2,mad)))
+        t(scale(t(x$tsTable),unlist(fastMad)[med_val],unlist(fastMad)[mad_val]))
+
     if(!mad.scale) x$scaled <- tmp <-  t(scale(t(x$tsTable)))
-    idx <- data.frame(t(apply(tmp,1,index,cutoff=cutoff)))
-    colnames(idx) <- x$samples
-    x$index <- cbind(as.data.frame(idx),index=apply(idx,1,paste,collapse=""))
-    x$cutoff <- cutoff
+
+    tmp <- TstCutoff(tmp,cutoff_check)
+    x$index <- cbind(as.data.frame(tmp$idx_tbl),index=tmp$idx_str)
+    x$cutoff <- tmp$cutoff
+
     return(x)
 }
+
+
 
 #' Indexing function
 #'
 #' Takes a numeric vector and return an expression index
 #' (i.e., a sequence of 1,-1, and 0)
 #' @param x A numeric
-#' @param cutoff A numeric, dermine the threshold for indexing, Default = 1
+#' @param cutoff A numeric, dermine the threshold for indexing
 #' @return Gene expression index
 #' @details The function defines limits around the center (median or mean),
 #' +/- cutoff value in median absolute deviation (MAD) or standard deviation
@@ -96,8 +125,9 @@ PreparingTheIndexes = function(x,cutoff=1,mad.scale=TRUE){
 #' @export
 #'
 
-index=function(x,cutoff=1){ return(unlist(lapply(x,function(x){
-    if(x<=(-cutoff)){y=-1}
-    if(x>=cutoff){y=1}
-    if(x>(-cutoff)&&x<(cutoff)){y=0}
-    return(y) })))}
+index=function(x,cutoff){
+    y=x
+    y[x>=cutoff]=1
+    y[x<=cutoff]=-1
+    y[x>-cutoff&x<cutoff]=0
+    return(y)}

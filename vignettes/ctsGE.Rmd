@@ -135,7 +135,7 @@ pander(head(rts$tsTable))
 
 ### Adding genes annotation to time series table
 Please use the `desc` option in the function: `readTSGE` in order to add genes 
-description to the time series table.
+annotation to the time series table.
 
 # Defining the expression index  
 1. First, the expression matrix is standardized. The function default 
@@ -146,9 +146,10 @@ deviation (MAD) units or standard deviation (SD) units, respectively.
 
 2. Next, the standardized values are converted to index values that indicate 
 whether gene expression is above, below or within the limits around the center 
-of the time series, i.e., **1 / -1 / 0**, respectively. The user defines a 
-parameter cutoff that determines the limits around the gene-expression center.
-Then the function calculates the index value at each time point according to:
+of the time series, i.e., **1 / -1 / 0**, respectively. The function defines a 
+parameter cutoff (see Section [4.1](#checking-the-optimal-cutoff)) that 
+determines the limits around the gene-expression center.Then the function 
+calculates the index value at each time point according to:
 
     + **0:** standardized value is within the limits (+/- cutoff)
     + **1:** standardized value exceeds the upper limit (+ cutoff)
@@ -158,10 +159,13 @@ Then the function calculates the index value at each time point according to:
 compared. When the range is too big, more time-series points will fall into
 it and will get an index value of 0, and this may be misleading. Too small range
 can result in too many index groups that will be too sensitive to small
-fluctuations in the time-series index. It is recommended to test different 
-cutoff values before deciding which one to use.
+fluctuations in the time-series index. The function chooses 
+the optimal cutoff(see Section [4.1](#checking-the-optimal-cutoff)) after 
+testing different values from 0.5 to 0.7 in increments of 0.05, there is an 
+option to test more or less cutoff values by setting the `cutoff_check` 
+parameter to larger or smaller values respectively.
 
-##Checking different cutoffs 
+##Checking the optimal cutoff
 The function `PreparingTheIndexes` generates an expression index 
 (i.e., a sequence of 1,-1, and 0) that represents the expression pattern along
 time points for each gene. Setting different limits for the center era 
@@ -169,28 +173,32 @@ time points for each gene. Setting different limits for the center era
 profile and consequently, the number of genes in each index group. Following the
 idea that instead of filtering “irrelevant” genes to reduce the noise, the 
 clustering will be performed on small gene groups, one would like to choose a 
-`cutoff` value, that will minimize the number of genesin each group, i.e., 
-generate index groups of equal size.
+cutoff value, that will minimize the number of genes in each group, i.e., 
+generate index groups of equal size. The function `PreparingTheIndexes` test
+range of cutoff values from 0.5 to 0.7 in increments of 0.05 
+(overall 5 different cutoffs), for each cutoff the function generates an
+expression index and performs a chi-squared test, cutoff with the lowest 
+chi-squared is chosen. To test more or less cutoffs the `cutoff_check` parameter
+can be set to larger or smaller values respectively.
 
-    In the next example, the lowest chi-squared is chosen:
+    In the next example, cutoff 0.55 gives the lowest chi-squared:
 
 ```{r,message=FALSE,warning=FALSE}
 
-cutoffs <- seq(0.3,1.5,0.05)
-prts <- list()
-
-for (i in 1:length(cutoffs)){
-    prts[[i]] <- PreparingTheIndexes(x = rts, cutoff = cutoffs[i], mad.scale = TRUE)
-    test  <- chisq.test(table(prts[[i]]$index$index))
-    print(paste0("chi-squared value for cutoff = ",cutoffs[i]," is: ",round(test$statistic[[1]])))
-}
+prts <- PreparingTheIndexes(x = rts, cutoff_check = 0.7, mad.scale = TRUE)
 
 ```
-**`cutoff = 0.55` has the lowest chi-squared value**
+**`cutoff = 0.55` is the optimal cutoff with the lowest chi-squared value**
 
-### Index overview after choosing a cutoff
+```{r,message=FALSE,warning=FALSE}
+
+prts$cutoff
+
+```
+
+### Index overview after 
 To get an idea of how the data look, and to determine the nature of the indexes
-formed from certain `cutoff` value, the number of zero values for each index 
+formed from certain cutoff value, the number of zero values for each index 
 is counted. In this tutorial example, the index can have no zeros, 
 one zero or up to six zeros; overall, the indexes and genes are divided into 
 seven groups. Indexes for which most of the time points present a zero value 
@@ -211,9 +219,7 @@ count_zero <-
     sum(strsplit(x,"")[[1]]==0)}
 
 
-i <- which(cutoffs==0.55) # choosing cutoff 0.55
-
-tbl <- prts[[i]]$index %>%
+tbl <- prts$index %>%
     # counting genes at each index
     group_by(index)%>% summarise(size=length(index)) %>% 
     # counting the number of zeros at each index
@@ -225,7 +231,9 @@ tmp = which(0:6%in%tbl$nzero==0)-1
 tmp_df = data.frame(nzero=tmp,genes=rep(0,length(tmp)))
 tbl <- bind_rows(tbl,tmp_df) %>% arrange(nzero)
 labs <- seq(0,max(tbl$genes), by = 0.2)
-barplot(tbl$genes, main = cutoffs[i], names.arg = tbl$nzero,axes = FALSE)
+barplot(tbl$genes, 
+        main = paste("Number of zeros in indexes with cutoff =",prts$cutoff), 
+        names.arg = tbl$nzero,axes = FALSE, xlab="Number of Zeros")
 axis(side = 2, at = labs, labels = paste0(labs * 100, "%"))
 ```
 
@@ -277,7 +285,7 @@ names(ClustIndexes)
 head(ClustIndexes$optimalK)
 
 # Table of clusters index for each gene
-head(ClustIndexes$ClusteredIndexesTable) 
+head(ClustIndexes$ClusteredIdxTable) 
 ```
 
 Running `kmeans` and calculating the optimal k for each one of the indexes in 
@@ -325,6 +333,10 @@ K-means helps distinguish these patterns from one another.
 indexPlot$graphs
 ```
 
+**Genes expression data in index '1100-1-1' separated into clsuter can be**
+**exported with R function `write.table`:**
+`write.table(indexPlot[[1]], file, sep = "\t")`
+
 # GUI for interactive exploration of gene-expression data
 
 The `ctsGEShinyApp` function takes two arguments the ctsGE object and a cutoff,
@@ -337,6 +349,8 @@ The tables and figures can be downloaded.
 ## Screenshots of the GUI
 
 ```{r,message=FALSE,warning=FALSE,eval=FALSE}
+library(shiny)
+library(DT)
 ctsGEShinyApp(rts,cutoff = 0.55)
 ```
 
