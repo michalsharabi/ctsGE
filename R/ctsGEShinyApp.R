@@ -6,8 +6,6 @@
 #' For more information about shiny apps \cite{http://shiny.rstudio.com/}
 #'
 #' @param rts list of an expression data that made by readTSGE
-#' @param cutoff A numeric that define the degree of change in gene espression
-#'  rate.  see \code{\link{PreparingTheIndexes}}
 #' @param mad.scale A boolean defaulting to TRUE as to what method of scaling
 #' to use.
 #'  Default median-base scaling. FALSE, mean-base scaling
@@ -15,8 +13,8 @@
 #'
 #' @return Creates a shiny application and opens a shinyapp.io web page
 #'
-#' @details The `ctsGEShinyApp` function takes two arguments the ctsGE object
-#' and a cutoff,and opens an html page as a GUI. On the web page, the user
+#' @details The `ctsGEShinyApp` function takes the ctsGE object
+#' and opens an html page as a GUI. On the web page, the user
 #' chooses the profile to visualize and the number of clusters (k parameter for
 #'  K-means) to show. The line graph of the profile separated into the clusters
 #'  will show in the main panel, and a list of the genes and their expressions
@@ -36,8 +34,8 @@
 #' @export
 #' @import  stats shiny
 #'
-ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
-    prts <- PreparingTheIndexes(rts, cutoff, mad.scale)
+ctsGEShinyApp <- function(rts, mad.scale = TRUE,title = NULL) {
+    prts <- PreparingTheIndexes(rts, mad.scale)
     idx <- as.character(unique(prts$index[,"index"]))
 
     clusters <- function(tbl,g){
@@ -116,11 +114,18 @@ ctsGEShinyApp <- function(rts, cutoff = 1, mad.scale = TRUE,title = NULL) {
                     get_plot_output_list(list_plot)
                 })
                 tbl <- filtered()[[1]]
+                if(ncol(tbl) > 7){
                 tbl <- cbind(genes=rownames(tbl),
                              desc =as.factor(tbl$desc),
                              clusters=as.factor(tbl$clusters),
                              data.frame(tbl[,prts$samples]),
                              index=input$index)
+                } else {
+                    tbl <- cbind(genes=rownames(tbl),
+                                 clusters=as.factor(tbl$clusters),
+                                 data.frame(tbl[,prts$samples]),
+                                 index=input$index)}
+
                 rownames(tbl) <- NULL
                 output$table <- shiny::renderUI({
                     if (is.null(tbl)) {return()}
