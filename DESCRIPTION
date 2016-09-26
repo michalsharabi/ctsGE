@@ -11,7 +11,7 @@ Description: Methodology for supervised clustering of potentially many predictor
                 predefined
                 set of model profiles.
 Depends:
-    R (>= 3.2)
+    R (>= 2.15.0)
 Imports:
     ccaPP,
     ggplot2,
