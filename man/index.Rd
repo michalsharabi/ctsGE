@@ -4,12 +4,12 @@
 \alias{index}
 \title{Indexing function}
 \usage{
-index(x, cutoff = 1)
+index(x, cutoff)
 }
 \arguments{
 \item{x}{A numeric}
 
-\item{cutoff}{A numeric, dermine the threshold for indexing, Default = 1}
+\item{cutoff}{A numeric, dermine the threshold for indexing}
 }
 \value{
 Gene expression index
