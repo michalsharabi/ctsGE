@@ -349,7 +349,7 @@ The tables and figures can be downloaded.
 ```{r,message=FALSE,warning=FALSE,eval=FALSE}
 library(shiny)
 library(DT)
-ctsGEShinyApp(rts,cutoff = 0.55)
+ctsGEShinyApp(rts)
 ```
 
 ###[The graph tab](http://vitisexonusage.byethost9.com/ctsGEShinyApp_tab1.png)

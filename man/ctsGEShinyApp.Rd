@@ -4,13 +4,10 @@
 \alias{ctsGEShinyApp}
 \title{GUI for interactive exploration of gene expression data.}
 \usage{
-ctsGEShinyApp(rts, cutoff = 1, mad.scale = TRUE, title = NULL)
+ctsGEShinyApp(rts, mad.scale = TRUE, title = NULL)
 }
 \arguments{
 \item{rts}{list of an expression data that made by readTSGE}
-
-\item{cutoff}{A numeric that define the degree of change in gene espression
-rate.  see \code{\link{PreparingTheIndexes}}}
 
 \item{mad.scale}{A boolean defaulting to TRUE as to what method of scaling
 to use.
@@ -27,8 +24,8 @@ Produce and launch Shiny app for interactive exploration of gene expression
 For more information about shiny apps \cite{http://shiny.rstudio.com/}
 }
 \details{
-The `ctsGEShinyApp` function takes two arguments the ctsGE object
-and a cutoff,and opens an html page as a GUI. On the web page, the user
+The `ctsGEShinyApp` function takes the ctsGE object
+and opens an html page as a GUI. On the web page, the user
 chooses the profile to visualize and the number of clusters (k parameter for
  K-means) to show. The line graph of the profile separated into the clusters
  will show in the main panel, and a list of the genes and their expressions
