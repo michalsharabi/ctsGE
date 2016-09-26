@@ -19,6 +19,7 @@ Imports:
     reshape2,
     shiny,
     stats,
+    stringr,
     utils
 Suggests:   BiocStyle,
             dplyr,

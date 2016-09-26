@@ -54,7 +54,7 @@
 #'@seealso \code{\link{scale}} \code{\link{index}}
 #'
 #' @export
-#' @import stats ccaPP
+#' @import stats ccaPP stringr
 #'
 PreparingTheIndexes = function(x,cutoff_check = 0.7,mad.scale=TRUE){
     # function to test cutoff values

@@ -37,7 +37,7 @@ files <- dir(path=data_dir,pattern = "\\\\.xls$")
 rts <- readTSGE(files, path = data_dir,
 labels = c("0h","6h","12h","24h","48h","72h"), skip = 10625 )
 prts <- PreparingTheIndexes(rts)
-pp <- PlotIndexesClust(prts,idx="000011")
+pp <- PlotIndexesClust(prts,idx="00101-1")
 pp$graphs # plots the line graphs
 
 }
