@@ -181,8 +181,6 @@ expression index and performs a chi-squared test, cutoff with the lowest
 chi-squared is chosen. To test more or less cutoffs the `cutoff_check` parameter
 can be set to larger or smaller values respectively.
 
-    In the next example, cutoff 0.55 gives the lowest chi-squared:
-
 ```{r,message=FALSE,warning=FALSE}
 
 prts <- PreparingTheIndexes(x = rts, cutoff_check = 0.7, mad.scale = TRUE)
