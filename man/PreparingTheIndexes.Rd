@@ -4,13 +4,17 @@
 \alias{PreparingTheIndexes}
 \title{Define an expression index for each gene}
 \usage{
-PreparingTheIndexes(x, cutoff_check = 0.7, mad.scale = TRUE)
+PreparingTheIndexes(x, min_cutoff = 0.5, max_cutoff = 0.7,
+  mad.scale = TRUE)
 }
 \arguments{
 \item{x}{list of an expression data that made by readTSGE}
 
-\item{cutoff_check}{A numeric to calculate the optimal cutoff for the data
-must be bigger than 0.5, default to 0.7  \emph{See Details}.}
+\item{min_cutoff}{A numeric the lower limit range to calculate the optimal
+cutoff for the data, default to 0.5  \emph{See Details}.}
+
+\item{max_cutoff}{A numeric the upper limit range to calculate the optimal
+cutoff for the data, default to 0.7  \emph{See Details}.}
 
 \item{mad.scale}{A boolean defaulting to TRUE as to what method of
 scaling to use.
@@ -37,7 +41,7 @@ respectively.
 clustering will be performed on small gene groups, an optimal cutoff value
 will be one that will minimize the number of genes in each group,
 i.e., generate index groups of equal size. The chi-squared values will be
-generate for each cutoff value (from 0.5 to `cutoff_check` parameter
+generate for each cutoff value (from min_cutoff to max_cutoff parameter
 in increments of 0.05) the cutoff that generate the lowest chi-squared is
 chosen.
 

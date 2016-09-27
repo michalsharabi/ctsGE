@@ -47,6 +47,7 @@ library(rmarkdown)
 
 
 ```{r,eval=FALSE,warning=FALSE,message=FALSE}
+source("https://bioconductor.org/biocLite.R")
 biocLite("ctsGE")
 ```
 
@@ -160,12 +161,10 @@ compared. When the range is too big, more time-series points will fall into
 it and will get an index value of 0, and this may be misleading. Too small range
 can result in too many index groups that will be too sensitive to small
 fluctuations in the time-series index. The function chooses 
-the optimal cutoff(see Section [4.1](#checking-the-optimal-cutoff)) after 
-testing different values from 0.5 to 0.7 in increments of 0.05, there is an 
-option to test more or less cutoff values by setting the `cutoff_check` 
-parameter to larger or smaller values respectively.
+the optimal cutoff (see Section [4.1](#checking-the-optimal-cutoff)) after 
+testing different cutoff values from 0.5 to 0.7 in increments of 0.05. 
 
-##Checking the optimal cutoff
+##Checking for optimal cutoff
 The function `PreparingTheIndexes` generates an expression index 
 (i.e., a sequence of 1,-1, and 0) that represents the expression pattern along
 time points for each gene. Setting different limits for the center era 
@@ -174,16 +173,18 @@ profile and consequently, the number of genes in each index group. Following the
 idea that instead of filtering “irrelevant” genes to reduce the noise, the 
 clustering will be performed on small gene groups, one would like to choose a 
 cutoff value, that will minimize the number of genes in each group, i.e., 
-generate index groups of equal size. The function `PreparingTheIndexes` test
-range of cutoff values from 0.5 to 0.7 in increments of 0.05 
-(overall 5 different cutoffs), for each cutoff the function generates an
-expression index and performs a chi-squared test, cutoff with the lowest 
-chi-squared is chosen. To test more or less cutoffs the `cutoff_check` parameter
-can be set to larger or smaller values respectively.
+generate index groups of equal size. The test for equality is performed by 
+calculating the chi-squared value from a comparison between the number of genes 
+in the index groups and the null hypothesis that all index groups are equal. 
+The test is performed for all the cutoffs in the range and the cutoff that gives
+the minimal chi-squared value is the most likely to generate equal index groups.
+The range of the cutoff values is given by `min_cutoff` and `max_cutoff` 
+arguments. However, by setting the same value to min and max parameters one can 
+define a cutoff regardless of what was suggested by the function.
 
 ```{r,message=FALSE,warning=FALSE}
 
-prts <- PreparingTheIndexes(x = rts, cutoff_check = 0.7, mad.scale = TRUE)
+prts <- PreparingTheIndexes(x = rts, min_cutoff=0.5, max_cutoff=0.7, mad.scale = TRUE)
 
 ```
 **`cutoff = 0.55` is the optimal cutoff with the lowest chi-squared value**
@@ -238,7 +239,7 @@ axis(side = 2, at = labs, labels = paste0(labs * 100, "%"))
 ##Preparing the indexes for the data  
 A **`cutoff = 0.55`** was chosen
 ```{r, message=FALSE,warning=FALSE}
-prts <- PreparingTheIndexes(x = rts, cutoff = 0.55, mad.scale = TRUE) 
+prts <- PreparingTheIndexes(x = rts, mad.scale = TRUE) 
 names(prts)
 ```
  
@@ -331,18 +332,22 @@ K-means helps distinguish these patterns from one another.
 indexPlot$graphs
 ```
 
-**Genes expression data in index '1100-1-1' separated into clsuter can be**
-**exported with R function `write.table`:**
-`write.table(indexPlot[[1]], file, sep = "\t")`
-
+##Export gene expression table to file
+Genes expression data in index '1100-1-1' separated into clsuter can be
+exported with R function `write.table`:
+```
+write.table(indexPlot[[1]], file, sep = "\t")
+```
 # GUI for interactive exploration of gene-expression data
 
-The `ctsGEShinyApp` function takes two arguments the ctsGE object and a cutoff,
-and opens an html page as a GUI. On the web page, the user chooses the 
-profile to visualize and the number of clusters (k parameter for K-means) to 
-show. The line graph of the profile separated into the clusters will show in the
-main panel, and a list of the genes and their expressions will also be available.
-The tables and figures can be downloaded.
+The `ctsGEShinyApp` function the ctsGE object,and opens an html page as a GUI.
+On the web page, the user chooses the profile to visualize and the number of 
+clusters (k parameter for K-means) to show. The line graph of the profile 
+separated into the clusters will show in the main panel, and a list of the genes
+and their expressions will also be available. The tables and figures can be 
+downloaded.
+
+*\*Note that running the Shiny GUI block the current session while running.*
 
 ## Screenshots of the GUI
 

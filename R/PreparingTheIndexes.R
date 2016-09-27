@@ -5,8 +5,10 @@
 #'
 #'
 #' @param x list of an expression data that made by readTSGE
-#' @param cutoff_check A numeric to calculate the optimal cutoff for the data
-#' must be bigger than 0.5, default to 0.7  \emph{See Details}.
+#' @param min_cutoff A numeric the lower limit range to calculate the optimal
+#' cutoff for the data, default to 0.5  \emph{See Details}.
+#' @param max_cutoff A numeric the upper limit range to calculate the optimal
+#' cutoff for the data, default to 0.7  \emph{See Details}.
 #' @param mad.scale A boolean defaulting to TRUE as to what method of
 #' scaling to use.
 #' Default median-base scaling. FALSE, mean-base scaling.
@@ -25,7 +27,7 @@
 #' clustering will be performed on small gene groups, an optimal cutoff value
 #' will be one that will minimize the number of genes in each group,
 #' i.e., generate index groups of equal size. The chi-squared values will be
-#' generate for each cutoff value (from 0.5 to `cutoff_check` parameter
+#' generate for each cutoff value (from min_cutoff to max_cutoff parameter
 #' in increments of 0.05) the cutoff that generate the lowest chi-squared is
 #' chosen.
 #'
@@ -56,10 +58,10 @@
 #' @export
 #' @import stats ccaPP stringr
 #'
-PreparingTheIndexes = function(x,cutoff_check = 0.7,mad.scale=TRUE){
+PreparingTheIndexes = function(x,min_cutoff=0.5,max_cutoff=0.7,mad.scale=TRUE){
     # function to test cutoff values
-    TstCutoff <- function(x,cutoff_check = 0.7){
-        c <- seq(0.5,cutoff_check,0.05)
+    TstCutoff <- function(x,min_cutoff=0.5,max_cutoff=0.7){
+        c <- seq(min_cutoff,max_cutoff,0.05)
         idx_tbl <- lapply(c,function(i){apply(x,1,index,cutoff=i)})
         idx_str <- lapply(idx_tbl,
                           function(y){apply(t(y),1,stringr::str_c,collapse="")})
@@ -73,6 +75,8 @@ PreparingTheIndexes = function(x,cutoff_check = 0.7,mad.scale=TRUE){
     if(sum(names(x)%in%c("tsTable","samples","tags","timePoints","desc" )) < 4)
         stop ( "Your List miss one or more of theses objects:
                tsTable, samples, tags, timePoints")
+    if(min_cutoff > max_cutoff)
+        stop ("min_cutoff value must be smaller than max_cutoff")
     tp <- x$timePoints
     # compute the MAD faster and return median and MAD for each row
     fastMad <- apply(t(x$tsTable),2,ccaPP::fastMAD)
@@ -85,7 +89,7 @@ PreparingTheIndexes = function(x,cutoff_check = 0.7,mad.scale=TRUE){
 
     if(!mad.scale) x$scaled <- tmp <-  t(scale(t(x$tsTable)))
 
-    tmp <- TstCutoff(tmp,cutoff_check)
+    tmp <- TstCutoff(tmp,min_cutoff,max_cutoff)
     x$index <- cbind(as.data.frame(tmp$idx_tbl),index=tmp$idx_str)
     x$cutoff <- tmp$cutoff
 

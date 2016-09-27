@@ -6,6 +6,12 @@
 #' For more information about shiny apps \cite{http://shiny.rstudio.com/}
 #'
 #' @param rts list of an expression data that made by readTSGE
+#' @param min_cutoff A numeric the lower limit range to calculate the optimal
+#' cutoff for the data, default to 0.5
+#' \emph{See \code{\link{PreparingTheIndexes}}}.
+#' @param max_cutoff A numeric the upper limit range to calculate the optimal
+#' cutoff for the data, default to 0.7
+#' \emph{See \code{\link{PreparingTheIndexes}}}.
 #' @param mad.scale A boolean defaulting to TRUE as to what method of scaling
 #' to use.
 #'  Default median-base scaling. FALSE, mean-base scaling
@@ -34,8 +40,9 @@
 #' @export
 #' @import  stats shiny
 #'
-ctsGEShinyApp <- function(rts, mad.scale = TRUE,title = NULL) {
-    prts <- PreparingTheIndexes(rts, mad.scale)
+ctsGEShinyApp <- function(rts,min_cutoff=0.5,max_cutoff=0.7,
+                          mad.scale=TRUE,title=NULL) {
+    prts <- PreparingTheIndexes(rts,min_cutoff,max_cutoff,mad.scale)
     idx <- as.character(unique(prts$index[,"index"]))
 
     clusters <- function(tbl,g){
