@@ -164,7 +164,7 @@ fluctuations in the time-series index. The function chooses
 the optimal cutoff (see Section [4.1](#checking-the-optimal-cutoff)) after 
 testing different cutoff values from 0.5 to 0.7 in increments of 0.05. 
 
-##Checking for optimal cutoff
+##Checking the optimal cutoff
 The function `PreparingTheIndexes` generates an expression index 
 (i.e., a sequence of 1,-1, and 0) that represents the expression pattern along
 time points for each gene. Setting different limits for the center era 
@@ -183,16 +183,12 @@ arguments. However, by setting the same value to min and max parameters one can
 define a cutoff regardless of what was suggested by the function.
 
 ```{r,message=FALSE,warning=FALSE}
-
 prts <- PreparingTheIndexes(x = rts, min_cutoff=0.5, max_cutoff=0.7, mad.scale = TRUE)
-
 ```
 **`cutoff = 0.55` is the optimal cutoff with the lowest chi-squared value**
 
 ```{r,message=FALSE,warning=FALSE}
-
 prts$cutoff
-
 ```
 
 ### Index overview after 
@@ -332,12 +328,14 @@ K-means helps distinguish these patterns from one another.
 indexPlot$graphs
 ```
 
+
 ##Export gene expression table to file
 Genes expression data in index '1100-1-1' separated into clsuter can be
 exported with R function `write.table`:
 ```
 write.table(indexPlot[[1]], file, sep = "\t")
 ```
+
 # GUI for interactive exploration of gene-expression data
 
 The `ctsGEShinyApp` function the ctsGE object,and opens an html page as a GUI.

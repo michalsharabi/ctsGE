@@ -40,6 +40,7 @@
 #' @export
 #' @import  stats shiny
 #'
+
 ctsGEShinyApp <- function(rts,min_cutoff=0.5,max_cutoff=0.7,
                           mad.scale=TRUE,title=NULL) {
     prts <- PreparingTheIndexes(rts,min_cutoff,max_cutoff,mad.scale)
