@@ -89,6 +89,7 @@ PreparingTheIndexes = function(x,min_cutoff=0.5,max_cutoff=0.7,mad.scale=TRUE){
 
     if(!mad.scale) x$scaled <- tmp <-  t(scale(t(x$tsTable)))
 
+
     tmp <- TstCutoff(tmp,min_cutoff,max_cutoff)
     x$index <- cbind(as.data.frame(tmp$idx_tbl),index=tmp$idx_str)
     x$cutoff <- tmp$cutoff
