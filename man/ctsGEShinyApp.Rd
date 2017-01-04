@@ -4,8 +4,10 @@
 \alias{ctsGEShinyApp}
 \title{GUI for interactive exploration of gene expression data.}
 \usage{
+
 ctsGEShinyApp(rts, min_cutoff = 0.5, max_cutoff = 0.7, mad.scale = TRUE,
   title = NULL)
+
 }
 \arguments{
 \item{rts}{list of an expression data that made by readTSGE}
@@ -17,6 +19,7 @@ cutoff for the data, default to 0.5
 \item{max_cutoff}{A numeric the upper limit range to calculate the optimal
 cutoff for the data, default to 0.7
 \emph{See \code{\link{PreparingTheIndexes}}}.}
+
 
 \item{mad.scale}{A boolean defaulting to TRUE as to what method of scaling
 to use.
