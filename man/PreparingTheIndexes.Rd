@@ -4,21 +4,17 @@
 \alias{PreparingTheIndexes}
 \title{Define an expression index for each gene}
 \usage{
-
 PreparingTheIndexes(x, min_cutoff = 0.5, max_cutoff = 0.7,
   mad.scale = TRUE)
-
 }
 \arguments{
 \item{x}{list of an expression data that made by readTSGE}
-
 
 \item{min_cutoff}{A numeric the lower limit range to calculate the optimal
 cutoff for the data, default to 0.5  \emph{See Details}.}
 
 \item{max_cutoff}{A numeric the upper limit range to calculate the optimal
 cutoff for the data, default to 0.7  \emph{See Details}.}
-
 
 \item{mad.scale}{A boolean defaulting to TRUE as to what method of
 scaling to use.

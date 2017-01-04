@@ -49,6 +49,7 @@ library(rmarkdown)
 ```{r,eval=FALSE,warning=FALSE,message=FALSE}
 source("https://bioconductor.org/biocLite.R")
 biocLite("ctsGE")
+library(ctsGE)
 ```
 
 # Workflow of clustering with ctsGE

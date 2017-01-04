@@ -104,7 +104,7 @@ readTSGE = function(files,path = NULL,columns=c(1,2),labels = NULL,desc = NULL,
     if(sum(tmp==0)){
         x$tsTable <- x$tsTable[names(which(tmp!=0)),]
         x$tags <- names(which(tmp!=0))
-        print(paste0(sum(tmp==0)," Genes were remove"))}
+        print(paste0(sum(tmp==0)," Genes with MAD=0 were remove"))}
 
     if(!is.null(desc)){
         x$desc <-  desc
