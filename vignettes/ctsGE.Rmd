@@ -45,10 +45,10 @@ library(rmarkdown)
 
 # Installing ctsGE
 
-
 ```{r,eval=FALSE,warning=FALSE,message=FALSE}
 source("https://bioconductor.org/biocLite.R")
 biocLite("ctsGE")
+#loading the package
 library(ctsGE)
 ```
 
@@ -79,7 +79,7 @@ Int. J. Parasitol. 34, 73–82.]) comprised of 12,625 genes over 18 samples
 purposes and for simplification, only one replicate out of three is used,
 for six overall time points.
 
-## Loading data from ncbi GEO 
+## Loading data from GEO 
 
 Load the files and make a list of the `matrix`:
 
@@ -106,7 +106,7 @@ rts <- readTSGE(gseList,labels = c("0h","6h","12h","24h","48h","72h"))
 
 ## Loading data from files
 Here is an example of how to load the time-series files from your directory; 
-data were imported from the **ctsGE** package:
+data is loaded from the ‘extdata’ directory of the **ctsGE** package:
 ```{r, message=FALSE,warning=FALSE}
 data_dir <- system.file("extdata", package = "ctsGE")
 files <- dir(path=data_dir,pattern = "\\.xls$")
@@ -136,13 +136,13 @@ pander(head(rts$tsTable))
 ```
 
 ### Adding genes annotation to time series table
-Please use the `desc` option in the function: `readTSGE` in order to add genes 
+The `desc` argument in the function **readTSGE** is used in order to add genes 
 annotation to the time series table.
 
 # Defining the expression index  
 1. First, the expression matrix is standardized. The function default 
-standardizing method is a median-based scaling; alternatively, a mean-based 
-scaling can be used. The new scaled values represent the distance of each gene 
+standardization method is a median-based scaling; alternatively, a mean-based 
+scaling can be used. The new standardized values represent the distance of each gene 
 at a certain time point from its center, median or mean, in median absolute 
 deviation (MAD) units or standard deviation (SD) units, respectively. 
 
@@ -159,17 +159,17 @@ calculates the index value at each time point according to:
 
 3. The ` +/- cutoff` parameter defines a reference range to which the data are 
 compared. When the range is too big, more time-series points will fall into
-it and will get an index value of 0, and this may be misleading. Too small range
-can result in too many index groups that will be too sensitive to small
-fluctuations in the time-series index. The function chooses 
-the optimal cutoff (see Section [4.1](#checking-the-optimal-cutoff)) after 
-testing different cutoff values from 0.5 to 0.7 in increments of 0.05. 
+it and will get an index value of 0, and this may be misleading. A narrow range 
+increases the variety of index groups as a result of high sensitivity to small 
+fluctuations in the time-series profile. The default cutoff values range from 
+0.5 to 0.7 in increments of 0.05 are used to choose the optimal cutoff  
+(see Section [4.1](#checking-the-optimal-cutoff)). 
 
 ##Checking the optimal cutoff
 The function `PreparingTheIndexes` generates an expression index 
 (i.e., a sequence of 1,-1, and 0) that represents the expression pattern along
 time points for each gene. Setting different limits for the center era 
-(with the parameter cutoff) will change the index for each gene-expression 
+(with the `cutoff` parameter) will change the index for each gene-expression 
 profile and consequently, the number of genes in each index group. Following the
 idea that instead of filtering “irrelevant” genes to reduce the noise, the 
 clustering will be performed on small gene groups, one would like to choose a 
@@ -177,10 +177,10 @@ cutoff value, that will minimize the number of genes in each group, i.e.,
 generate index groups of equal size. The test for equality is performed by 
 calculating the chi-squared value from a comparison between the number of genes 
 in the index groups and the null hypothesis that all index groups are equal. 
-The test is performed for all the cutoffs in the range and the cutoff that gives
-the minimal chi-squared value is the most likely to generate equal index groups.
-The range of the cutoff values is given by `min_cutoff` and `max_cutoff` 
-arguments. However, by setting the same value to min and max parameters one can 
+The test is performed for a set of cutoffs within a given range.The cutoff that 
+gives the minimal chi-squared value is the most likely to generate equal index 
+groups. The range of the cutoff values is given by `min_cutoff` and `max_cutoff` 
+arguments. However, by assigning the same value to min and max parameters one can 
 define a cutoff regardless of what was suggested by the function.
 
 ```{r,message=FALSE,warning=FALSE}
@@ -192,10 +192,9 @@ prts <- PreparingTheIndexes(x = rts, min_cutoff=0.5, max_cutoff=0.7, mad.scale =
 prts$cutoff
 ```
 
-### Index overview after 
-To get an idea of how the data look, and to determine the nature of the indexes
-formed from certain cutoff value, the number of zero values for each index 
-is counted. In this tutorial example, the index can have no zeros, 
+### Index properties 
+To explore how informative the expression profiles are, we counted the number
+of zeros in each index. In this tutorial example, the index can have no zeros, 
 one zero or up to six zeros; overall, the indexes and genes are divided into 
 seven groups. Indexes for which most of the time points present a zero value 
 (in this example, three or more time points) are expected to show a pattern in 
@@ -233,7 +232,7 @@ barplot(tbl$genes,
 axis(side = 2, at = labs, labels = paste0(labs * 100, "%"))
 ```
 
-##Preparing the indexes for the data  
+##Preparing the indexes 
 A **`cutoff = 0.55`** was chosen
 ```{r, message=FALSE,warning=FALSE}
 prts <- PreparingTheIndexes(x = rts, mad.scale = TRUE) 
@@ -262,7 +261,7 @@ pander(head(prts$index))
 ## Clustering each index with K-means  
 The clustering is done with K-means. To choose an optimal k for K-means
 clustering, the Elbow method was applied^[Thorndike RL (1953). Who Belongs in
-the Family? Psychometrika, 18(4), 267–276.], this method looks at the percentage
+the Family? Psychometrika, 18(4), 267–276.]. This method looks at the percentage
 of variance explained as a function of the number of clusters: the chosen number
 of clusters should be such that adding another cluster does not give much better 
 modeling of the data. First, the ratio of the within-cluster sum of squares 
@@ -286,7 +285,7 @@ head(ClustIndexes$ClusteredIdxTable)
 
 Running `kmeans` and calculating the optimal k for each one of the indexes in 
 the data could take a long time. To shorten the procedure the user can skip this 
-step altogether and directly view a specific index and its clusters by running either 
+step and directly view a specific index and its clusters by running either 
 the `PlotIndexesClust()` or the `ctsGEShinyApp()` function
 
 # Graphic visualization of an index  
@@ -315,12 +314,13 @@ panderOptions("table.style","rmarkdown")
 pander(head(indexPlot[[1]]))
 ```
 
-For this example, the index `1100-1-1` is used. by Looking at this index, it can
-be assumed that the expression of the genes belonging to it was downregulated 
-along the time points. Since the index only states whether gene expression 
-is upregulated (1), downregulated (-1) or stays the same (0), gene subsets 
-of the same profile will usually show more than one expression pattern. 
-K-means helps distinguish these patterns from one another.  
+This example focus on `1100-1-1` index. This index indicates expression profile
+that is upregulated at the beginning and gradually downregulated along the
+time points. Since the index only states whether gene expression 
+is upregulated (1), downregulated (-1) or stays the same (0)rather than the 
+exact expression level, many expression profiles may fall under such index. 
+The following K-means step helps to split the profiles under that index group
+into more coherent clusters.  
 
 **Line graphs of the genes' expression patterns in index '1100-1-1' separated** 
 **into clusters:**
@@ -331,7 +331,7 @@ indexPlot$graphs
 
 
 ##Export gene expression table to file
-Genes expression data in index '1100-1-1' separated into clsuter can be
+Genes expression data in index '1100-1-1' separated into cluster can be
 exported with R function `write.table`:
 ```
 write.table(indexPlot[[1]], file, sep = "\t")
@@ -341,8 +341,8 @@ write.table(indexPlot[[1]], file, sep = "\t")
 
 The `ctsGEShinyApp` function the ctsGE object,and opens an html page as a GUI.
 On the web page, the user chooses the profile to visualize and the number of 
-clusters (k parameter for K-means) to show. The line graph of the profile 
-separated into the clusters will show in the main panel, and a list of the genes
+clusters (k parameter for K-means) to show. The line graphs of the profile 
+separated into clusters will show in the main panel, and a list of the genes
 and their expressions will also be available. The tables and figures can be 
 downloaded.
 
